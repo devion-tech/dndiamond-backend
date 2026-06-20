@@ -1,5 +1,8 @@
 import CryptoJS from "crypto-js";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
+
+const saltRounds = 12;
 
 export const generateRandomPassword = (min = 4, max = 6) => {
     const chars = process.env.RANDOM_PASSWORD;
@@ -17,13 +20,21 @@ export const generateRandomPassword = (min = 4, max = 6) => {
 // Encrypt
 export const encryptData = async (data) => {
     try {
-        var encryptedText = await CryptoJS.AES.encrypt(data, process.env.SECRET_KEY).toString();
-        return encryptedText;
+        const hashedPassword = await bcrypt.hash(data, saltRounds);
+        return hashedPassword;
     } catch (error) {
         throw new Error("Internal server error!");
     }
 };
 
+export const verifyData = async (data, hashedData) => {
+    try {
+        const isMatch = await bcrypt.compare(data, hashedData);
+        return isMatch; 
+    } catch (error) {
+        console.error('Error verifying password:', error);
+    }
+}
 // Decrypt
 export const decryptData = async (data) => {
     try {

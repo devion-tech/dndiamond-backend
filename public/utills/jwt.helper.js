@@ -4,7 +4,7 @@ import User from '../models/user.js';
 // generate token 
 export const authToken = async (obj) => {
     try {
-        const token = jwt.sign(obj, process.env.SECRET_KEY, {
+        const token = await jwt.sign(obj, process.env.SECRET_KEY, {
             expiresIn: "24h",
             // expiresIn: "10s",
         })
