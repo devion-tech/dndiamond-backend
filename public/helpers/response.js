@@ -1,32 +1,38 @@
-export const success = (res, data = {}, message = "Success", status = 200 ) => {
-    return res.status(status).json({
-        status,
-        success: true,
-        message,
-        data
-    });
+export const success = (res, data = {}, message = "Success", status = 200) => {
+  return res.status(status).json({
+    status,
+    success: true,
+    message,
+    data,
+  });
 };
 
-export const errorHandler = (res, message = "Something went wrong", status = 400, data = {}) => {
-    return res.status(status).json({
-        status,
-        success: false,
-        message,
-        data
-    });
+export const errorHandler = (
+  res,
+  message = "Something went wrong",
+  status = 400,
+  data = {},
+) => {
+  return res.status(status).json({
+    status,
+    success: false,
+    message,
+    data,
+  });
 };
 
 export const getPagination = (query) => {
+  if (query.page === undefined && query.limit === undefined) {
+    return null;
+  }
 
-    const pageNumber = Number(query.page ?? 1);
-    const pageLimit = Number(query.limit ?? 10);
-    const skip = (pageNumber - 1) * pageLimit;
+  const pageNumber = Number(query.page || 1);
+  const pageLimit = Number(query.limit || 10);
+  const skip = (pageNumber - 1) * pageLimit;
 
-    return {
-        pageNumber,
-        pageLimit,
-        skip
-    };
+  return {
+    pageNumber,
+    pageLimit,
+    skip,
+  };
 };
-
-

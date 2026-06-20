@@ -1,5 +1,5 @@
 export const forgotPasswordTemplate = (resetLink) => {
-    return `
+  return `
      <p>Click the link below to reset your password:</p>
          <a href="${resetLink}">${resetLink}</a>
          <p>This link will expire in 15 minutes.</p>
