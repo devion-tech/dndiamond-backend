@@ -3,6 +3,8 @@ import adminRouter from "./admin.js";
 import attributeRouter from "./attribute.js";
 import categoryRouter from "./category.js";
 import uploadRouter from "./file.js";
+import globalsRouter from "./globals.js";
+import productRouter from "./product.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -12,5 +14,7 @@ router.use("/admin", adminRouter);
 router.use("/attribute", attributeRouter);
 router.use("/category", categoryRouter);
 router.use("/uploads", uploadRouter);
+router.use("/globals", globalsRouter);
+router.use("/product", productRouter);
 
 export default router;

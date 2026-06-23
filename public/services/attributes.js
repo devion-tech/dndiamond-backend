@@ -100,7 +100,7 @@ export const getAttributes = async (filter) => {
     const query = { is_deleted: 0 };
 
     if (filter.type) {
-      query.type = filter.type;
+      Object.assign(query, typeQuery(filter.type.toLowerCase()));
     }
 
     const attributes = await Attribute.find(query);
