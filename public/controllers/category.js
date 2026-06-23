@@ -57,3 +57,51 @@ export const updateSubcategory = async (req, res) => {
     return errorHandler(res, "Internal server error", 500);
   }
 };
+
+export const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await categoryService.updateCategory({
+      id,
+      ...req.body,
+    });
+
+    if (!result.success) {
+      return errorHandler(res, result.message, 400);
+    }
+
+    return success(res, result.data, "Category updated successfully", 200);
+  } catch (error) {
+    return errorHandler(res, "Internal server error", 500);
+  }
+};
+
+export const deleteSubcategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await categoryService.deleteSubcategory({ id });
+
+    if (!result.success) {
+      return errorHandler(res, result.message, 400);
+    }
+
+    return success(res, null, "Subcategory deleted successfully", 200);
+  } catch (error) {
+    return errorHandler(res, "Internal server error", 500);
+  }
+};
+
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await categoryService.deleteCategory({ id });
+
+    if (!result.success) {
+      return errorHandler(res, result.message, 400);
+    }
+
+    return success(res, null, "Category deleted successfully", 200);
+  } catch (error) {
+    return errorHandler(res, "Internal server error", 500);
+  }
+};
