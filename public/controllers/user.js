@@ -1,6 +1,7 @@
 import { errorHandler, getPagination, success } from "../helpers/response.js";
 import * as userService from "../services/user.js"; // Import your service function
 
+/* User signup */
 export const createUser = async (req, res) => {
   try {
     const userData = req.body;
@@ -16,6 +17,7 @@ export const createUser = async (req, res) => {
   }
 };
 
+/* User login */
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -35,6 +37,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
+/* Get user with and without pagination */
 export const getUsers = async (req, res) => {
   try {
     const pagination = getPagination(req.query);
@@ -57,6 +60,7 @@ export const getUsers = async (req, res) => {
   }
 };
 
+/* Update user  */
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
