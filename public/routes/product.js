@@ -1,10 +1,10 @@
 import { Router } from "express";
 import * as productController from "../controllers/product.js";
 import { verifyAdminToken, verifytoken } from "../utills/jwt.helper.js";
-import { validateRequest, validateRequestForQuery } from "../middelware/validation.js";
+import { validateRequest, validateRequestForParams, validateRequestForQuery } from "../middelware/validation.js";
 import { createProductValidation } from "../validation/product.js";
 import { getProducts } from "../services/product.js";
-import { paginationValidation } from "../validation/common.js";
+import { commonIdValidation, paginationValidation } from "../validation/common.js";
 
 const router = new Router();
 
@@ -19,5 +19,8 @@ router.post(
 
 /* Get all product by  */
 router.get("/", validateRequestForQuery(paginationValidation), productController.getAllProduct);
+
+/* Get single product */
+router.get("/:id", validateRequestForParams(commonIdValidation), productController.getSingleProduct);
 
 export default router;

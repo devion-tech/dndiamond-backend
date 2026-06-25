@@ -26,17 +26,29 @@ export const getAllProduct = async (req, res, next) => {
       subcategory_id: req.query.subcategory_id,
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Products fetched successfully",
-      data: result.products,
-      pagination: {
-        total: result.total,
-        page: pageNumber,
-        limit: pageLimit,
-        total_pages: Math.ceil(result.total / pageLimit),
+    return success(
+      res,
+      {
+        products: result.products,
+        pagination: {
+          total: result.total,
+          page: pageNumber,
+          limit: pageLimit,
+          total_pages: Math.ceil(result.total / pageLimit),
+        },
       },
-    });
+      "Products fetched successfully"
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* Get single product by id */
+export const getSingleProduct = async (req, res, next) => {
+  try {
+    const result = await productService.getSingleProduct(req.params.id);
+    return success(res, result, "Product fetched successfully!", 200);
   } catch (error) {
     next(error);
   }

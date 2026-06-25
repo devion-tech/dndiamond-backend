@@ -3,7 +3,7 @@ import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Globals from "../models/globals.js";
-import { calculateJewelryPrice } from "../utills/productPrice.helper.js";
+import { calculateJewelryPrice, calculateJewelryVariantPrices } from "../utills/productPrice.helper.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -100,3 +100,67 @@ export const getProducts = async ({
     total,
   };
 };
+
+/* Get single product by id */
+export const getSingleProduct = async (id) => {
+  const product = await Product.findOne({
+    _id: id,
+    is_deleted: 0,
+  })
+    .populate("category_id")
+    .populate("subcategory_id")
+    .populate("attribute_id");
+
+  if (!product) {
+    return {
+      success: false,
+      message: "Product not found",
+    };
+  }
+
+  const pricingSettings = await Globals.findOne();
+  let goldPrices = [];
+
+  if (product.product_type === "jewelry") {
+    goldPrices =
+      calculateJewelryVariantPrices(
+        product,
+        pricingSettings,
+      );
+  }
+
+  const updatedOptions = product.options.map((option) => {
+
+    if (option.name.toLowerCase() !== "gold_type") {
+      return option;
+    }
+
+    return {
+      ...option.toObject(),
+      values: option.values.map((gold) => {
+
+        const goldRate = pricingSettings[gold.value] || 0;
+        const goldPrice = product.weight * goldRate;
+        const makingCharge = product.weight * pricingSettings.making_charge;
+
+        const finalPrice =
+          goldPrice +
+          makingCharge +
+          (product.pricing?.diamond_cost || 0) +
+          (product.pricing?.gemstone_cost || 0) +
+          (product.pricing?.additional_cost || 0);
+
+        return {
+          value: gold.value,
+          is_disabled: gold.is_disabled,
+          price: finalPrice,
+        };
+      }),
+    };
+  });
+
+  return {
+    ...product.toObject(),
+    options: updatedOptions,
+  };
+}

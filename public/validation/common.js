@@ -17,5 +17,5 @@ export const paginationValidation = Joi.object({
 
 // Common validation of id
 export const commonIdValidation = Joi.object({
-  id: Joi.number().integer().required(),
+  id: Joi.string().required(),
 });
