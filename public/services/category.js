@@ -280,17 +280,16 @@ export const getCategories = async (filter) => {
       };
     }
 
-    const categories = await Category.find(query).populate({
-      path: "attribute_id",
-      select: "type",
-    });
+    const categories = await Category.find(query).select(
+      "_id name attribute_id",
+    );
 
     const categoriesWithSub = await Promise.all(
       categories.map(async (category) => {
         const subcategories = await Subcategory.find({
           parent_id: category._id,
           is_deleted: 0,
-        });
+        }).select("_id name ");
 
         return {
           ...category.toObject(),
