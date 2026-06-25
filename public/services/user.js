@@ -61,7 +61,16 @@ export const loginUser = async (email, password) => {
       email: user.email,
       role: ROLE.USER,
     });
-    return { success: true, token, user };
+
+    return {
+      success: true,
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    };
   } catch (error) {
     throw new Error("internal server error");
   }

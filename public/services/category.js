@@ -282,7 +282,7 @@ export const getCategories = async (filter) => {
 
     const categories = await Category.find(query).populate({
       path: "attribute_id",
-      select: "type attributes",
+      select: "type",
     });
 
     const categoriesWithSub = await Promise.all(

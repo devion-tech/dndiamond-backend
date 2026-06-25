@@ -30,7 +30,15 @@ export const loginAdmin = async (email, password) => {
       email: admin.email,
       role: ROLE.ADMIN,
     });
-    return { success: true, token, admin };
+    return {
+      success: true,
+      token,
+      admin: {
+        _id: admin._id,
+        name: admin.name,
+        email: admin.email,
+      },
+    };
   } catch (error) {
     console.log("error :>> ", error);
     throw new Error("internal server error");
