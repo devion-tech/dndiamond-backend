@@ -29,6 +29,21 @@ export const getCategories = async (req, res) => {
   }
 };
 
+export const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await categoryService.getCategoryById({ id });
+
+    if (!result.success) {
+      return errorHandler(res, result.message, 400);
+    }
+
+    return success(res, result.data, "Category retrieved successfully", 200);
+  } catch (error) {
+    return errorHandler(res, "Internal server error", 500);
+  }
+};
+
 export const createSubcategory = async (req, res) => {
   try {
     const result = await categoryService.createSubcategory(req.body);

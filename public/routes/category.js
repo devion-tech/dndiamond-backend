@@ -12,6 +12,7 @@ import {
 const router = new Router();
 
 router.get("/", categoryController.getCategories);
+router.get("/:id", categoryController.getCategoryById);
 router.post(
   "/",
   verifyAdminToken,

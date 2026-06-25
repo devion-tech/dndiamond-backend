@@ -31,6 +31,8 @@ const AttributeSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toObject: { flattenMaps: true },
+    toJSON: { flattenMaps: true },
   },
 );
 

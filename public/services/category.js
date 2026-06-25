@@ -310,3 +310,44 @@ export const getCategories = async (filter) => {
     };
   }
 };
+
+export const getCategoryById = async (payload) => {
+  try {
+    const { id } = payload;
+
+    const category = await Category.findOne({
+      _id: id,
+      is_deleted: 0,
+    })
+      .select("_id name attribute_id")
+      .populate({
+        path: "attribute_id",
+        select: "type attributes",
+      });
+
+    if (!category) {
+      return {
+        success: false,
+        message: `Category with id ${id} not found`,
+      };
+    }
+
+    const subcategories = await Subcategory.find({
+      parent_id: category._id,
+      is_deleted: 0,
+    }).select("_id name ");
+
+    return {
+      success: true,
+      data: {
+        ...category.toObject(),
+        subcategories,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
