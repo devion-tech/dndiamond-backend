@@ -6,3 +6,16 @@ export const fileDeleteValidation = Joi.object({
     "string.empty": "Id cannot be empty",
   }),
 });
+
+// Note :- common pagination validation
+export const paginationValidation = Joi.object({
+  page: Joi.number().required().min(1).default(1),
+  limit: Joi.number().required().min(1).default(5),
+  search: Joi.string().allow(""),
+  id: Joi.string().required()
+});
+
+// Common validation of id
+export const commonIdValidation = Joi.object({
+  id: Joi.number().integer().required(),
+});

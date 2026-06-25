@@ -2,8 +2,8 @@ import Product from "../models/product.js";
 import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
-
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+import Globals from "../models/globals.js";
+import { calculateJewelryPrice } from "../utills/productPrice.helper.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -50,5 +50,53 @@ export const createProduct = async (payload) => {
   return {
     success: true,
     data: product,
+  };
+};
+
+/* Get product with pagination */
+export const getProducts = async ({
+  page,
+  limit,
+  skip,
+  id,
+}) => {
+  const filter = { is_deleted: 0 };
+
+  if (id) {
+    filter.subcategory_id = id;
+  }
+
+  const [products, total] = await Promise.all([
+    Product.find(filter)
+      .populate("subcategory_id")
+      .populate("attribute_id")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+
+    Product.countDocuments(filter),
+  ]);
+
+  const pricingSettings = await Globals.findOne();
+
+  const productsWithPrice = products.map(
+    (product) => {
+      let displayPrice = product.price;
+      if (product.product_type === "jewelry") {
+        displayPrice = calculateJewelryPrice(
+          product,
+          pricingSettings,
+        );
+      }
+      return {
+        ...product.toObject(),
+        display_price: displayPrice,
+      };
+    },
+  );
+
+  return {
+    products: productsWithPrice,
+    total,
   };
 };

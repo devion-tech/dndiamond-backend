@@ -16,12 +16,6 @@ const optionValueSchema = Joi.object({
   image: Joi.string().uri().trim().messages({
     "string.uri": "Option image must be a valid URL",
   }),
-  price: Joi.number().messages({
-    "number.base": "Option price must be a number",
-  }),
-  weight: Joi.number().messages({
-    "number.base": "Option weight must be a number",
-  }),
   is_disabled: Joi.boolean().messages({
     "boolean.base": "Option is_disabled must be a boolean",
   }),
@@ -37,20 +31,6 @@ const optionSchema = Joi.object({
     "array.min": "Option values must include at least one value",
     "array.base": "Option values must be an array",
   }),
-}).custom((option, helpers) => {
-  if (option.name.trim().toLowerCase() !== "gold_type") {
-    return option;
-  }
-
-  const missingWeight = option.values.some(
-    (value) => value.weight === undefined || value.weight === null,
-  );
-
-  if (missingWeight) {
-    return helpers.message("Weight is required for gold_type option values");
-  }
-
-  return option;
 });
 
 export const createProductValidation = Joi.object({
@@ -64,10 +44,22 @@ export const createProductValidation = Joi.object({
     "array.min": "At least one product image is required",
     "array.base": "Images must be an array",
   }),
+  product_type: Joi.string()
+    .valid("jewelry", "diamond", "watch")
+    .required()
+    .messages({
+      "any.required": "Product type is required",
+      "any.only": "Invalid product type",
+    }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().optional().messages({
     "number.base": "Price must be a number",
   }),
+  pricing: Joi.object({
+    diamond_cost: Joi.number().min(0).default(0),
+    gemstone_cost: Joi.number().min(0).default(0),
+    additional_cost: Joi.number().min(0).default(0),
+  }).optional(),
   category_id: objectId.required().messages({
     "any.required": "Category ID is required",
   }),
@@ -77,5 +69,6 @@ export const createProductValidation = Joi.object({
   attribute_id: objectId.required().messages({
     "any.required": "Attribute ID is required",
   }),
+  weight: Joi.number().messages({ "number.base": "Option weight must be a number" }).required(),
   options: Joi.array().items(optionSchema).optional(),
 });

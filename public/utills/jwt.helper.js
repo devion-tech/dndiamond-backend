@@ -7,8 +7,7 @@ import { ROLE } from "../helpers/constant.js";
 export const authToken = async (obj) => {
   try {
     const token = await jwt.sign(obj, process.env.SECRET_KEY, {
-      expiresIn: "24h",
-      // expiresIn: "10s",
+      expiresIn: obj.role !== ROLE.ADMIN ? "2d" : "30d",
     });
     return token;
   } catch (error) {

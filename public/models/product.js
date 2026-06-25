@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { productTypes } from "../helpers/constant.js";
 
 const OptionValueSchema = new mongoose.Schema(
   {
@@ -14,11 +15,7 @@ const OptionValueSchema = new mongoose.Schema(
     is_disabled: {
       type: Boolean,
       default: false,
-    },
-    weight: {
-      type: Number,
-      required: false,
-    },
+    }
   },
   { _id: false },
 );
@@ -29,6 +26,7 @@ const OptionSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      lowercase: true,
     },
     values: [OptionValueSchema],
   },
@@ -58,9 +56,21 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    product_type: {
+      type: String,
+      required: true,
+      unique: true,
+      enum: productTypes,
+      trim: true,
+      lowercase: true,
+    },
     price: {
       type: Number,
-      required: false,
+      default: 0,
     },
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -78,6 +88,25 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
     options: [OptionSchema],
+
+    // Mainly for jewelry products
+    pricing: {
+      diamond_cost: {
+        type: Number,
+        default: 0,
+      },
+
+      gemstone_cost: {
+        type: Number,
+        default: 0,
+      },
+
+      additional_cost: {
+        type: Number,
+        default: 0,
+      },
+    },
+
     is_deleted: {
       type: Number,
       default: 0,

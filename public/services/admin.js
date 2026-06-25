@@ -40,7 +40,6 @@ export const loginAdmin = async (email, password) => {
       },
     };
   } catch (error) {
-    console.log("error :>> ", error);
     throw new Error("internal server error");
   }
 };

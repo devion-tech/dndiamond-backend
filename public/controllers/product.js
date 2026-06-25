@@ -1,6 +1,7 @@
-import { errorHandler, success } from "../helpers/response.js";
+import { errorHandler, getPagination, success } from "../helpers/response.js";
 import * as productService from "../services/product.js";
 
+/* Create profuct by admin API */
 export const createProduct = async (req, res) => {
   try {
     const result = await productService.createProduct(req.body);
@@ -10,5 +11,33 @@ export const createProduct = async (req, res) => {
     return success(res, result.data, "Product created successfully", 201);
   } catch (error) {
     return errorHandler(res, "Internal server error", 500);
+  }
+};
+
+/* Get product by all user */
+export const getAllProduct = async (req, res, next) => {
+  try {
+    const { pageNumber, pageLimit, skip } = await getPagination(req.query)
+    const result = await productService.getProducts({
+      page: pageNumber,
+      limit: pageLimit,
+      skip,
+      category_id: req.query.category_id,
+      subcategory_id: req.query.subcategory_id,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Products fetched successfully",
+      data: result.products,
+      pagination: {
+        total: result.total,
+        page: pageNumber,
+        limit: pageLimit,
+        total_pages: Math.ceil(result.total / pageLimit),
+      },
+    });
+  } catch (error) {
+    next(error);
   }
 };
