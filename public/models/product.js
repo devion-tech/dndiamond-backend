@@ -15,7 +15,7 @@ const OptionValueSchema = new mongoose.Schema(
     is_disabled: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   { _id: false },
 );
@@ -89,7 +89,7 @@ const ProductSchema = new mongoose.Schema(
     },
     options: [OptionSchema],
 
-    // Mainly for jewelry products
+    // Mainly for jewellery products
     pricing: {
       diamond_cost: {
         type: Number,

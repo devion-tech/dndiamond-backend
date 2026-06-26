@@ -45,7 +45,7 @@ export const createProductValidation = Joi.object({
     "array.base": "Images must be an array",
   }),
   product_type: Joi.string()
-    .valid("jewelry", "diamond", "watch")
+    .valid("jewellery", "diamond", "watch")
     .required()
     .messages({
       "any.required": "Product type is required",

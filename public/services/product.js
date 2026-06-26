@@ -3,7 +3,10 @@ import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Globals from "../models/globals.js";
-import { calculateJewelryPrice, calculateJewelryVariantPrices } from "../utills/productPrice.helper.js";
+import {
+  calculateJewelryPrice,
+  calculateJewelryVariantPrices,
+} from "../utills/productPrice.helper.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -54,12 +57,7 @@ export const createProduct = async (payload) => {
 };
 
 /* Get product with pagination */
-export const getProducts = async ({
-  page,
-  limit,
-  skip,
-  id,
-}) => {
+export const getProducts = async ({ page, limit, skip, id }) => {
   const filter = { is_deleted: 0 };
 
   if (id) {
@@ -79,21 +77,16 @@ export const getProducts = async ({
 
   const pricingSettings = await Globals.findOne();
 
-  const productsWithPrice = products.map(
-    (product) => {
-      let displayPrice = product.price;
-      if (product.product_type === "jewelry") {
-        displayPrice = calculateJewelryPrice(
-          product,
-          pricingSettings,
-        );
-      }
-      return {
-        ...product.toObject(),
-        display_price: displayPrice,
-      };
-    },
-  );
+  const productsWithPrice = products.map((product) => {
+    let displayPrice = product.price;
+    if (product.product_type === "jewellery") {
+      displayPrice = calculateJewelryPrice(product, pricingSettings);
+    }
+    return {
+      ...product.toObject(),
+      display_price: displayPrice,
+    };
+  });
 
   return {
     products: productsWithPrice,
@@ -121,16 +114,11 @@ export const getSingleProduct = async (id) => {
   const pricingSettings = await Globals.findOne();
   let goldPrices = [];
 
-  if (product.product_type === "jewelry") {
-    goldPrices =
-      calculateJewelryVariantPrices(
-        product,
-        pricingSettings,
-      );
+  if (product.product_type === "jewellery") {
+    goldPrices = calculateJewelryVariantPrices(product, pricingSettings);
   }
 
   const updatedOptions = product.options.map((option) => {
-
     if (option.name.toLowerCase() !== "gold_type") {
       return option;
     }
@@ -138,7 +126,6 @@ export const getSingleProduct = async (id) => {
     return {
       ...option.toObject(),
       values: option.values.map((gold) => {
-
         const goldRate = pricingSettings[gold.value] || 0;
         const goldPrice = product.weight * goldRate;
         const makingCharge = product.weight * pricingSettings.making_charge;
@@ -163,4 +150,4 @@ export const getSingleProduct = async (id) => {
     ...product.toObject(),
     options: updatedOptions,
   };
-}
+};

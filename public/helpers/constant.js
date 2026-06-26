@@ -3,4 +3,4 @@ export const ROLE = {
   USER: "USER",
 };
 
-export const productTypes = ["jewelry", "diamond", "watch"];
+export const productTypes = ["jewellery", "diamond", "watch"];
