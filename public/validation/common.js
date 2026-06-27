@@ -1,10 +1,16 @@
 import Joi from "joi";
+import mongoose from "mongoose";
 
 export const fileDeleteValidation = Joi.object({
-  id: Joi.string().required().messages({
-    "any.required": "Id is required",
-    "string.empty": "Id cannot be empty",
-  }),
+  ids: Joi.array()
+    .items(Joi.string().trim().required())
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "Ids are required",
+      "array.base": "Ids must be an array",
+      "array.min": "At least one id is required",
+    })
 });
 
 // Note :- common pagination validation
@@ -18,4 +24,13 @@ export const paginationValidation = Joi.object({
 // Common validation of id
 export const commonIdValidation = Joi.object({
   id: Joi.string().required(),
+});
+
+/* Common object id validation */
+export const objectId = Joi.string().custom((value, helpers) => {
+  if (!mongoose.Types.ObjectId.isValid(value)) {
+    return helpers.message("Invalid ObjectId");
+  }
+
+  return value;
 });

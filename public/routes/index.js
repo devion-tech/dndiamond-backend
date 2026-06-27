@@ -5,6 +5,7 @@ import categoryRouter from "./category.js";
 import uploadRouter from "./file.js";
 import globalsRouter from "./globals.js";
 import productRouter from "./product.js";
+import cartRouter from "./cart.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -16,5 +17,6 @@ router.use("/category", categoryRouter);
 router.use("/uploads", uploadRouter);
 router.use("/globals", globalsRouter);
 router.use("/product", productRouter);
+router.use("/cart", cartRouter);
 
 export default router;

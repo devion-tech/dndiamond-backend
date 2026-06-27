@@ -42,8 +42,8 @@ export const uploadToCloudinary = async (file, folder = "products") => {
   };
 };
 
-export const destroyFile = async (publicId) => {
-  return await cloudinary.uploader.destroy(publicId);
+export const destroyFiles = async (publicIds) => {
+  return await cloudinary.api.delete_resources(publicIds);
 };
 
 export default cloudinary;

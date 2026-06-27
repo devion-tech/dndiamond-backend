@@ -3,10 +3,8 @@ import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Globals from "../models/globals.js";
-import {
-  calculateJewelryPrice,
-  calculateJewelryVariantPrices,
-} from "../utills/productPrice.helper.js";
+import { calculateJewelleryPrice, calculateJewelleryVariantPrices } from "../utills/productPrice.helper.js";
+import { JEWELLERY } from "../helpers/constant.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -77,16 +75,21 @@ export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
 
   const pricingSettings = await Globals.findOne();
 
-  const productsWithPrice = products.map((product) => {
-    let displayPrice = product.price;
-    if (product.product_type === "jewellery") {
-      displayPrice = calculateJewelryPrice(product, pricingSettings);
-    }
-    return {
-      ...product.toObject(),
-      display_price: displayPrice,
-    };
-  });
+  const productsWithPrice = products.map(
+    (product) => {
+      let displayPrice = product.price;
+      if (product.product_type === JEWELLERY) {
+        displayPrice = calculateJewelleryPrice(
+          product,
+          pricingSettings,
+        );
+      }
+      return {
+        ...product.toObject(),
+        display_price: displayPrice,
+      };
+    },
+  );
 
   return {
     products: productsWithPrice,
@@ -114,8 +117,12 @@ export const getSingleProduct = async (id) => {
   const pricingSettings = await Globals.findOne();
   let goldPrices = [];
 
-  if (product.product_type === "jewellery") {
-    goldPrices = calculateJewelryVariantPrices(product, pricingSettings);
+  if (product.product_type === JEWELLERY) {
+    goldPrices =
+      calculateJewelleryVariantPrices(
+        product,
+        pricingSettings,
+      );
   }
 
   const updatedOptions = product.options.map((option) => {

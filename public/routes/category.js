@@ -13,35 +13,41 @@ const router = new Router();
 
 router.get("/", categoryController.getCategories);
 router.get("/:id", categoryController.getCategoryById);
+
 router.post(
   "/",
   verifyAdminToken,
   validateRequest(createCategoryValidation),
   categoryController.createCategory,
 );
+
 router.post(
   "/subcategory",
   verifyAdminToken,
   validateRequest(createSubcategoryValidation),
   categoryController.createSubcategory,
 );
+
 router.put(
   "/subcategory/:id",
   verifyAdminToken,
   validateRequest(updateSubcategoryValidation),
   categoryController.updateSubcategory,
 );
+
 router.put(
   "/:id",
   verifyAdminToken,
   validateRequest(updateCategoryValidation),
   categoryController.updateCategory,
 );
+
 router.delete(
   "/subcategory/:id",
   verifyAdminToken,
   categoryController.deleteSubcategory,
 );
+
 router.delete("/:id", verifyAdminToken, categoryController.deleteCategory);
 
 export default router;

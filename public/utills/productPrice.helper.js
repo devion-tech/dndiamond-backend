@@ -1,5 +1,5 @@
 // helpers/productPrice.helper.js
-export const calculateJewelryPrice = (
+export const calculateJewelleryPrice = (
     product,
     pricingSettings
 ) => {
@@ -33,8 +33,8 @@ export const calculateJewelryPrice = (
     return Math.min(...prices);
 };
 
-/* Calculate Single Jewelry price */
-export const calculateJewelryVariantPrices = (
+/* Calculate Single Jewellery price */
+export const calculateJewelleryVariantPrices = (
     product,
     pricingSettings,
 ) => {
@@ -64,4 +64,24 @@ export const calculateJewelryVariantPrices = (
             price: finalPrice,
         };
     });
+};
+
+/* Calculate selected gold price for add to cart */
+export const calculateSelectedGoldPrice = (
+    product,
+    pricingSettings,
+    selectedGoldType
+) => {
+
+    const goldRate = pricingSettings[selectedGoldType] || 0;
+    const goldPrice = product.weight * goldRate;
+    const makingCharge = product.weight * pricingSettings.making_charge;
+
+    return (
+        goldPrice +
+        makingCharge +
+        (product.pricing?.diamond_cost || 0) +
+        (product.pricing?.gemstone_cost || 0) +
+        (product.pricing?.additional_cost || 0)
+    );
 };

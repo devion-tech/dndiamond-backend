@@ -1,7 +1,7 @@
 import cloudinary, {
   uploadImage,
   uploadToCloudinary,
-  destroyFile,
+  destroyFiles,
 } from "../middelware/multer.js";
 
 /* Add new product image by admin */
@@ -17,9 +17,9 @@ export const addNewFile = async (files) => {
 };
 
 /* Destroy image by admin */
-export const deleteFile = async (id) => {
+export const deleteFile = async (ids) => {
   try {
-    const response = await destroyFile(id);
+    const response = await destroyFiles(ids);
     return response;
   } catch (error) {
     throw new Error(error, "Failed to delete  file!");

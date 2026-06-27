@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifytoken } from "../utills/jwt.helper.js";
-import { validateRequestForQuery } from "../middelware/validation.js";
+import { verifyAdminToken } from "../utills/jwt.helper.js";
+import { validateRequest } from "../middelware/validation.js";
 import { uploadImage } from "../middelware/multer.js";
 import { addFiles, deleteImage } from "../controllers/file.js";
 import { fileDeleteValidation } from "../validation/common.js";
@@ -10,16 +10,16 @@ const router = new Router();
 /* Add file */
 router.post(
   "/addFiles",
-  //   verifytoken,
+  verifyAdminToken,
   uploadImage.array("images", 10),
   addFiles,
 );
 
 /* Delete uploaded image */
-router.delete(
+router.post(
   "/destroyFile",
-  //   verifytoken,
-  validateRequestForQuery(fileDeleteValidation),
+  verifyAdminToken,
+  validateRequest(fileDeleteValidation),
   deleteImage,
 );
 

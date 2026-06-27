@@ -63,7 +63,6 @@ const ProductSchema = new mongoose.Schema(
     product_type: {
       type: String,
       required: true,
-      unique: true,
       enum: productTypes,
       trim: true,
       lowercase: true,
@@ -117,5 +116,5 @@ const ProductSchema = new mongoose.Schema(
   },
 );
 
-const Product = new mongoose.model("Product", ProductSchema);
+const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
 export default Product;

@@ -4,3 +4,4 @@ export const ROLE = {
 };
 
 export const productTypes = ["jewellery", "diamond", "watch"];
+export const JEWELLERY = "jewellery";
