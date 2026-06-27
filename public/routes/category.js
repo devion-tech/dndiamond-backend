@@ -49,5 +49,6 @@ router.delete(
 );
 
 router.delete("/:id", verifyAdminToken, categoryController.deleteCategory);
+router.get("/subCategory", verifyAdminToken, categoryController.getSubCategories);
 
 export default router;

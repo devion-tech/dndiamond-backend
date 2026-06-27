@@ -350,3 +350,10 @@ export const getCategoryById = async (payload) => {
     };
   }
 };
+
+
+export const getSubCategories = async () => {
+  const query = { is_deleted: 0 };
+  const subCategories = await Subcategory.find().select("_id name");
+  return subCategories;
+};
