@@ -57,11 +57,11 @@ export const createProduct = async (payload) => {
 };
 
 /* Get product with pagination */
-export const getProducts = async ({ page, limit, skip, id }) => {
+export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
   const filter = { is_deleted: 0 };
 
-  if (id) {
-    filter.subcategory_id = id;
+  if (subcategory_id) {
+    filter.subcategory_id = subcategory_id;
   }
 
   const [products, total] = await Promise.all([

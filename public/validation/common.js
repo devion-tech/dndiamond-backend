@@ -12,7 +12,7 @@ export const paginationValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),
   limit: Joi.number().required().min(1).default(5),
   search: Joi.string().allow(""),
-  id: Joi.string().required()
+  id: Joi.string().required(),
 });
 
 // Common validation of id

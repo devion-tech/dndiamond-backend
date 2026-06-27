@@ -17,12 +17,12 @@ export const createProduct = async (req, res) => {
 /* Get product by all user */
 export const getAllProduct = async (req, res, next) => {
   try {
-    const { pageNumber, pageLimit, skip } = await getPagination(req.query)
+    const { pageNumber, pageLimit, skip } = await getPagination(req.query);
     const result = await productService.getProducts({
       page: pageNumber,
       limit: pageLimit,
       skip,
-      category_id: req.query.category_id,
+      // category_id: req.query.category_id,
       subcategory_id: req.query.subcategory_id,
     });
 
@@ -37,7 +37,7 @@ export const getAllProduct = async (req, res, next) => {
           total_pages: Math.ceil(result.total / pageLimit),
         },
       },
-      "Products fetched successfully"
+      "Products fetched successfully",
     );
   } catch (error) {
     next(error);

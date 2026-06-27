@@ -39,11 +39,15 @@ export const createProductValidation = Joi.object({
     "string.empty": "Product name cannot be empty",
   }),
   description: Joi.string().allow("", null).optional(),
-  images: Joi.array().items(Joi.string().uri().trim()).min(1).required().messages({
-    "any.required": "At least one product image is required",
-    "array.min": "At least one product image is required",
-    "array.base": "Images must be an array",
-  }),
+  images: Joi.array()
+    .items(Joi.string().uri().trim())
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "At least one product image is required",
+      "array.min": "At least one product image is required",
+      "array.base": "Images must be an array",
+    }),
   product_type: Joi.string()
     .valid("jewellery", "diamond", "watch")
     .required()
@@ -69,6 +73,15 @@ export const createProductValidation = Joi.object({
   attribute_id: objectId.required().messages({
     "any.required": "Attribute ID is required",
   }),
-  weight: Joi.number().messages({ "number.base": "Option weight must be a number" }).required(),
+  weight: Joi.number()
+    .messages({ "number.base": "Option weight must be a number" })
+    .required(),
   options: Joi.array().items(optionSchema).optional(),
+});
+
+export const getProductsValidation = Joi.object({
+  page: Joi.number().required().min(1).default(1),
+  limit: Joi.number().required().min(1).default(5),
+  search: Joi.string().allow(""),
+  subcategory_id: objectId.optional(),
 });

@@ -1,10 +1,20 @@
 import { Router } from "express";
 import * as productController from "../controllers/product.js";
 import { verifyAdminToken, verifytoken } from "../utills/jwt.helper.js";
-import { validateRequest, validateRequestForParams, validateRequestForQuery } from "../middelware/validation.js";
-import { createProductValidation } from "../validation/product.js";
+import {
+  validateRequest,
+  validateRequestForParams,
+  validateRequestForQuery,
+} from "../middelware/validation.js";
+import {
+  createProductValidation,
+  getProductsValidation,
+} from "../validation/product.js";
 import { getProducts } from "../services/product.js";
-import { commonIdValidation, paginationValidation } from "../validation/common.js";
+import {
+  commonIdValidation,
+  paginationValidation,
+} from "../validation/common.js";
 
 const router = new Router();
 
@@ -16,11 +26,18 @@ router.post(
   productController.createProduct,
 );
 
-
 /* Get all product by  */
-router.get("/", validateRequestForQuery(paginationValidation), productController.getAllProduct);
+router.get(
+  "/",
+  validateRequestForQuery(getProductsValidation),
+  productController.getAllProduct,
+);
 
 /* Get single product */
-router.get("/:id", validateRequestForParams(commonIdValidation), productController.getSingleProduct);
+router.get(
+  "/:id",
+  validateRequestForParams(commonIdValidation),
+  productController.getSingleProduct,
+);
 
 export default router;
