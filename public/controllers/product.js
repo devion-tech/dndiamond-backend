@@ -22,7 +22,6 @@ export const getAllProduct = async (req, res, next) => {
       page: pageNumber,
       limit: pageLimit,
       skip,
-      // category_id: req.query.category_id,
       subcategory_id: req.query.subcategory_id,
     });
 
