@@ -351,9 +351,12 @@ export const getCategoryById = async (payload) => {
   }
 };
 
-
 export const getSubCategories = async () => {
-  const query = { is_deleted: 0 };
-  const subCategories = await Subcategory.find().select("_id name");
-  return subCategories;
+  try {
+    const query = { is_deleted: 0 };
+    const subCategories = await Subcategory.find(query).select("_id name");
+    return subCategories;
+  } catch (error) {
+    throw new Error("Internal server error", error.message)
+  }
 };

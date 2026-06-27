@@ -124,12 +124,11 @@ export const deleteCategory = async (req, res) => {
 export const getSubCategories = async (req, res) => {
   try {
     const result = await categoryService.getSubCategories();
-
     if (result && result.length === 0) {
       return errorHandler(res, "subCategory not found!", 404);
     }
 
-    return success(res, result.data, "subCategories retrieved successfully", 200);
+    return success(res, result, "subCategories retrieved successfully", 200);
   } catch (error) {
     return errorHandler(res, "Internal server error", 500);
   }

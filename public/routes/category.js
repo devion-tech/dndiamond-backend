@@ -11,6 +11,7 @@ import {
 
 const router = new Router();
 
+router.get("/subcategory", verifyAdminToken, categoryController.getSubCategories);
 router.get("/", categoryController.getCategories);
 router.get("/:id", categoryController.getCategoryById);
 
@@ -49,6 +50,5 @@ router.delete(
 );
 
 router.delete("/:id", verifyAdminToken, categoryController.deleteCategory);
-router.get("/subCategory", verifyAdminToken, categoryController.getSubCategories);
 
 export default router;
