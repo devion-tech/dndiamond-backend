@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { objectId } from "./common.js";
 
-/* Add to cart joi validation */
+/* Add to cart validation */
 export const addToCartValidation = Joi.object({
     guest_id: Joi.string().optional(),
 
@@ -21,4 +21,30 @@ export const addToCartValidation = Joi.object({
         .messages({
             "any.required": "Selected options are required",
         }),
+});
+
+/* Get cart validation */
+export const getCartValidation = Joi.object({
+    guest_id: Joi.string().trim().optional(),
+});
+
+/* Update cart validation */
+export const updateCartValidation = Joi.object({
+    guest_id: Joi.string().optional(),
+    item_id: Joi.string().required().messages({
+        "any.required": "Item id is required",
+    }),
+    quantity: Joi.number().min(1).required().messages({
+        "any.required": "Quantity is required",
+    }),
+});
+
+/* Delete cart validation */
+export const deleteCartValidation = Joi.object({
+    guest_id: Joi.string().optional(),
+
+    item_id: Joi.string().required().messages({
+        "any.required": "Item id is required",
+        "string.empty": "Item id cannot be empty",
+    }),
 });

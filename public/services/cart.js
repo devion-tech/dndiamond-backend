@@ -88,3 +88,188 @@ export const addToCart = async (
 
     return cart;
 };
+
+/* Get cart details */
+export const getCart = async (
+    userId,
+    guestId
+) => {
+    if (!userId && !guestId) {
+        return {
+            items: [],
+            total_items: 0,
+            subtotal: 0,
+        };
+    }
+
+    let cart = null;
+
+    if (userId) {
+        cart = await Cart.findOne({
+            user_id: userId,
+        }).populate("items.product_id");
+    } else {
+        cart = await Cart.findOne({
+            guest_id: guestId,
+        }).populate("items.product_id");
+    }
+
+    if (!cart) {
+        return {
+            items: [],
+            total_items: 0,
+            subtotal: 0,
+        };
+    }
+
+    const pricingSettings = await Global.findOne();
+
+    let subtotal = 0;
+
+    const items = await Promise.all(
+        cart.items.map(async (item) => {
+            const product = item.product_id;
+
+            if (!product) {
+                return null;
+            }
+
+            let currentPrice =
+                product.price || 0;
+
+            if (
+                product.product_type === JEWELLERY
+            ) {
+                currentPrice =
+                    calculateSelectedGoldPrice(
+                        product,
+                        pricingSettings,
+                        item.selected_options.gold_type
+                    );
+            }
+
+            const total = currentPrice * item.quantity;
+            subtotal += total;
+            console.log('item :>>12212 ', item);
+            return {
+                item_id: item._id,
+                quantity: item.quantity,
+                selected_options: item.selected_options,
+                price_snapshot: item.price_snapshot,
+                current_price: currentPrice,
+                price_changed: currentPrice !== item.price_snapshot,
+                total,
+                product,
+            };
+        })
+    );
+
+    return {
+        items: items.filter(Boolean),
+        total_items: items.filter(Boolean).length,
+        subtotal,
+    };
+};
+
+/* Update cart */
+export const updateCart = async (
+    userId,
+    guestId,
+    itemId,
+    quantity
+) => {
+    const query = userId
+        ? {
+            user_id: userId,
+            "items._id": itemId,
+        }
+        : {
+            guest_id: guestId,
+            "items._id": itemId,
+        };
+
+    const cart = await Cart.findOneAndUpdate(
+        query,
+        {
+            $set: {
+                "items.$.quantity": quantity,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    if (!cart) {
+        return {
+            success: false,
+            message: "Cart item not found",
+        };
+    }
+
+    return cart;
+};
+
+/* Delete cart */
+export const deleteCartItem = async (
+    userId,
+    guestId,
+    itemId
+) => {
+    const query = userId
+        ? { user_id: userId }
+        : { guest_id: guestId };
+
+    const cart = await Cart.findOneAndUpdate(
+        query,
+        {
+            $pull: {
+                items: {
+                    _id: itemId,
+                },
+            },
+        },
+        {
+            new: true,
+        }
+    );
+
+    if (!cart) {
+        return {
+            success: false,
+            message: "Cart not found",
+        };
+    }
+
+    return cart;
+};
+
+/* Clear full cart */
+export const clearCart = async (userId, guestId) => {
+    const query = userId
+        ? { user_id: userId }
+        : { guest_id: guestId };
+
+    const cart = await Cart.findOneAndUpdate(
+        query,
+        {
+            $set: {
+                items: [],
+            },
+        },
+        {
+            new: true,
+        }
+    );
+    if (!cart) {
+        return {
+            success: false,
+            message: "Cart not found",
+        };
+    }
+
+    return {
+        success: true,
+        data: cart,
+    };
+};

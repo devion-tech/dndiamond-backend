@@ -51,6 +51,36 @@ export const verifytoken = async (req, res, next) => {
   );
 };
 
+/* Optional auth token for cart api */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token || typeof token !== "string") {
+      return next();
+    }
+
+    jwt.verify(
+      token.replace("Bearer ", ""),
+      process.env.SECRET_KEY,
+      async (err, user) => {
+        if (err) {
+          return next();
+        }
+
+        const getUser = await User.findById(user._id);
+
+        if (getUser) {
+          req.user = getUser._id;
+        }
+        next();
+      }
+    );
+  } catch (error) {
+    next();
+  }
+};
+
 export const verifyAdminToken = async (req, res, next) => {
   const token = req.headers.authorization;
   if (!token || typeof token !== "string") {
