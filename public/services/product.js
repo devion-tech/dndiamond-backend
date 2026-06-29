@@ -110,9 +110,9 @@ export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
   }
 
   const [products, total] = await Promise.all([
-    Product.find(filter)
+    Product.find(filter).select({ pricing: 0 })
       .populate("subcategory_id")
-      .populate("attribute_id")
+      // .populate("attribute_id")
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 }),
