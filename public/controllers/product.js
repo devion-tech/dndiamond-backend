@@ -60,8 +60,27 @@ export const getAllProduct = async (req, res, next) => {
 export const getSingleProduct = async (req, res, next) => {
   try {
     const result = await productService.getSingleProduct(req.params.id);
+    if (!result.success) {
+      return errorHandler(res, result.message);
+    }
+
     return success(res, result, "Product fetched successfully!", 200);
   } catch (error) {
     next(error);
   }
 };
+
+/* Delete product by id */
+export const deleteProduct = async (req, res, next) => {
+  try {
+    const result = await productService.deleteProduct(req.params.id);
+    if (!result.success) {
+      return errorHandler(res, result.message, 404);
+    }
+
+    return success(res, {}, "Product delete successfully!", 200);
+
+  } catch (error) {
+    next(error);
+  }
+}

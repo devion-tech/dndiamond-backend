@@ -80,8 +80,21 @@ export const clearCart = async (req, res, next) => {
             return errorHandler(res, result.message, 404)
         }
         return success(res, result.data, "Cart cleared successfully");
-
     } catch (error) {
         next(error);
     }
 };
+
+/* Merge cart after login */
+export const mergeCart = async (req, res, next) => {
+    try {
+        const result = await cartService.mergeCart(req.user._id, req.body.guest_id);
+
+        if (!result.success) {
+            return errorHandler(res, result.message)
+        }
+        return success(res, result, "Cart merged successfully");
+    } catch (error) {
+        next(error);
+    }
+}

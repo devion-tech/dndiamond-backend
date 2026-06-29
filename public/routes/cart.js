@@ -3,6 +3,7 @@ import * as cartController from "../controllers/cart.js";
 import { validateRequest, validateRequestForQuery } from "../middelware/validation.js";
 import { Router } from "express";
 import { optionalAuth } from "../utills/jwt.helper.js";
+import { verifytoken } from "../utills/jwt.helper.js";
 
 const router = new Router();
 
@@ -12,5 +13,6 @@ router.get("/getCart", optionalAuth, validateRequestForQuery(getCartValidation),
 router.patch("/updateCart", optionalAuth, validateRequest(updateCartValidation), cartController.updateCart);
 router.post("/deleteCart", optionalAuth, validateRequest(deleteCartValidation), cartController.deleteCartItem);
 router.delete("/clear", optionalAuth, validateRequestForQuery(getCartValidation), cartController.clearCart);
+router.post("/merge", verifytoken, validateRequest(getCartValidation), cartController.mergeCart);
 
 export default router;

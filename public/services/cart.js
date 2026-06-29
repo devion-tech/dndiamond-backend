@@ -1,4 +1,5 @@
 import { JEWELLERY } from "../helpers/constant.js";
+import { success } from "../helpers/response.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Global from "../models/globals.js";
@@ -271,5 +272,50 @@ export const clearCart = async (userId, guestId) => {
     return {
         success: true,
         data: cart,
+    };
+};
+
+/* Merge cart */
+export const mergeCart = async (userId, guestId) => {
+    const guestCart = await Cart.findOne({ guest_id: guestId });
+    if (!guestCart) {
+        return {
+            success: false,
+            message: "Guest cart not found",
+        };
+    }
+
+    let userCart = await Cart.findOne({ user_id: userId });
+
+    // User has no cart
+    if (!userCart) {
+        guestCart.user_id = userId;
+        guestCart.guest_id = null;
+
+        await guestCart.save();
+
+        return {
+            success: true,
+            cart: guestCart,
+        };
+    }
+
+    // Merge items
+    for (const guestItem of guestCart.items) {
+        const existingItem = userCart.items.find((item) => item.product_id.toString() === guestItem.product_id.toString());
+
+        if (existingItem) {
+            existingItem.quantity += guestItem.quantity;
+        } else {
+            userCart.items.push(guestItem);
+        }
+    }
+
+    await userCart.save();
+    await Cart.findByIdAndDelete(guestCart._id);
+
+    return {
+        success: true,
+        cart: userCart,
     };
 };

@@ -43,10 +43,9 @@ router.put(
 );
 
 /* Get single product */
-router.get(
-  "/:id",
-  validateRequestForParams(commonIdValidation),
-  productController.getSingleProduct,
-);
+router.get("/:id", validateRequestForParams(commonIdValidation), productController.getSingleProduct);
+
+/* Delete product by id */
+router.delete("/:id", verifyAdminToken, validateRequestForParams(commonIdValidation), productController.deleteProduct);
 
 export default router;

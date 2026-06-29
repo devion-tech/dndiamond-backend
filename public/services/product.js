@@ -205,3 +205,21 @@ export const getSingleProduct = async (id) => {
     options: updatedOptions,
   };
 };
+
+/* Delete single product */
+export const deleteProduct = async (id) => {
+  const product = await Product.findOne({ _id: id, is_deleted: 0 });
+
+  if (!product) {
+    return {
+      success: false,
+      message: "Product not found",
+    };
+  }
+
+  const result = await Product.findByIdAndUpdate({ _id: id }, { is_deleted: 1 });
+  return {
+    success: true,
+    data: result
+  }
+};
