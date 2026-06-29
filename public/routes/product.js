@@ -8,6 +8,7 @@ import {
 } from "../middelware/validation.js";
 import {
   createProductValidation,
+  editProductValidation,
   getProductsValidation,
 } from "../validation/product.js";
 import { getProducts } from "../services/product.js";
@@ -31,6 +32,14 @@ router.get(
   "/",
   validateRequestForQuery(getProductsValidation),
   productController.getAllProduct,
+);
+
+/* Edit product */
+router.put(
+  "/:id",
+  verifyAdminToken,
+  validateRequest(editProductValidation),
+  productController.editProduct,
 );
 
 /* Get single product */

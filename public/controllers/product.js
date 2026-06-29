@@ -14,6 +14,19 @@ export const createProduct = async (req, res) => {
   }
 };
 
+/* Edit product by admin API */
+export const editProduct = async (req, res) => {
+  try {
+    const result = await productService.editProduct(req.params.id, req.body);
+    if (!result.success) {
+      return errorHandler(res, result.message, 400);
+    }
+    return success(res, result.data, "Product updated successfully", 200);
+  } catch (error) {
+    return errorHandler(res, "Internal server error", 500);
+  }
+};
+
 /* Get product by all user */
 export const getAllProduct = async (req, res, next) => {
   try {

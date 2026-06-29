@@ -54,6 +54,53 @@ export const createProduct = async (payload) => {
   };
 };
 
+export const editProduct = async (id, payload) => {
+  const product = await Product.findOne({ _id: id, is_deleted: 0 });
+  if (!product) {
+    return { success: false, message: "Product not found" };
+  }
+
+  const { slug, category_id, subcategory_id, attribute_id } = payload;
+
+  if (category_id) {
+    const category = await Category.findOne({ _id: category_id, is_deleted: 0 });
+    if (!category) {
+      return { success: false, message: `Category with id ${category_id} not found` };
+    }
+  }
+
+  if (subcategory_id) {
+    const subcategory = await Subcategory.findOne({
+      _id: subcategory_id,
+      is_deleted: 0,
+    });
+    if (!subcategory) {
+      return { success: false, message: `Subcategory with id ${subcategory_id} not found` };
+    }
+  }
+
+  if (attribute_id) {
+    const attribute = await Attribute.findById(attribute_id);
+    if (!attribute) {
+      return { success: false, message: `Attribute with id ${attribute_id} not found` };
+    }
+  }
+
+  if (slug) {
+    const existingSlug = await Product.findOne({ slug, is_deleted: 0, _id: { $ne: id } });
+    if (existingSlug) {
+      return { success: false, message: `Slug ${slug} already exists` };
+    }
+  }
+
+  const updatedProduct = await Product.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return { success: true, data: updatedProduct };
+};
+
 /* Get product with pagination */
 export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
   const filter = { is_deleted: 0 };
