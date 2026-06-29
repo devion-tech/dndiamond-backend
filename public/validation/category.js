@@ -16,6 +16,7 @@ export const createCategoryValidation = Joi.object({
   attribute_id: objectId.required().messages({
     "any.required": "Attribute ID is required",
   }),
+  image: Joi.string().required(),
   subcategories: Joi.array()
     .items(
       Joi.object({

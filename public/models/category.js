@@ -13,6 +13,10 @@ const CategorySchema = new mongoose.Schema(
       ref: "Attribute",
       required: true,
     },
+    image: {
+      type: String,
+      required: true,
+    },
     is_deleted: {
       type: Number,
       default: 0,

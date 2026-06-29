@@ -6,7 +6,7 @@ import Attribute from "../models/attributes.js";
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export const createCategory = async (payload) => {
-  const { name, attribute_id, subcategories = [] } = payload;
+  const { name, attribute_id, image, subcategories = [] } = payload;
 
   const existing = await Category.findOne({
     name: {
@@ -34,6 +34,7 @@ export const createCategory = async (payload) => {
   const category = await Category.create({
     name,
     attribute_id,
+    image
   });
 
   const createdSubcategories = [];
