@@ -13,7 +13,7 @@ export const fileDeleteValidation = Joi.object({
     })
 });
 
-// Note :- common pagination validation
+// Note :- common pagination validation with id field
 export const paginationValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),
   limit: Joi.number().required().min(1).default(5),
@@ -33,4 +33,11 @@ export const objectId = Joi.string().custom((value, helpers) => {
   }
 
   return value;
+});
+
+/* Pagination required */
+export const pagValidation = Joi.object({
+  page: Joi.number().required().min(1).default(1),
+  limit: Joi.number().required().min(1).default(5).max(50),
+  search: Joi.string().allow("")
 });
