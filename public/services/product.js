@@ -3,7 +3,10 @@ import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Globals from "../models/globals.js";
-import { calculateJewelleryPrice, calculateJewelleryVariantPrices } from "../utills/productPrice.helper.js";
+import {
+  calculateJewelleryPrice,
+  calculateJewelleryVariantPrices,
+} from "../utills/productPrice.helper.js";
 import { JEWELLERY } from "../helpers/constant.js";
 
 export const createProduct = async (payload) => {
@@ -63,9 +66,15 @@ export const editProduct = async (id, payload) => {
   const { slug, category_id, subcategory_id, attribute_id } = payload;
 
   if (category_id) {
-    const category = await Category.findOne({ _id: category_id, is_deleted: 0 });
+    const category = await Category.findOne({
+      _id: category_id,
+      is_deleted: 0,
+    });
     if (!category) {
-      return { success: false, message: `Category with id ${category_id} not found` };
+      return {
+        success: false,
+        message: `Category with id ${category_id} not found`,
+      };
     }
   }
 
@@ -75,19 +84,29 @@ export const editProduct = async (id, payload) => {
       is_deleted: 0,
     });
     if (!subcategory) {
-      return { success: false, message: `Subcategory with id ${subcategory_id} not found` };
+      return {
+        success: false,
+        message: `Subcategory with id ${subcategory_id} not found`,
+      };
     }
   }
 
   if (attribute_id) {
     const attribute = await Attribute.findById(attribute_id);
     if (!attribute) {
-      return { success: false, message: `Attribute with id ${attribute_id} not found` };
+      return {
+        success: false,
+        message: `Attribute with id ${attribute_id} not found`,
+      };
     }
   }
 
   if (slug) {
-    const existingSlug = await Product.findOne({ slug, is_deleted: 0, _id: { $ne: id } });
+    const existingSlug = await Product.findOne({
+      slug,
+      is_deleted: 0,
+      _id: { $ne: id },
+    });
     if (existingSlug) {
       return { success: false, message: `Slug ${slug} already exists` };
     }
@@ -110,7 +129,8 @@ export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
   }
 
   const [products, total] = await Promise.all([
-    Product.find(filter).select({ pricing: 0 })
+    Product.find(filter)
+      .select({ pricing: 0 })
       .populate("subcategory_id")
       // .populate("attribute_id")
       .skip(skip)
@@ -122,21 +142,16 @@ export const getProducts = async ({ page, limit, skip, subcategory_id }) => {
 
   const pricingSettings = await Globals.findOne();
 
-  const productsWithPrice = products.map(
-    (product) => {
-      let displayPrice = product.price;
-      if (product.product_type === JEWELLERY) {
-        displayPrice = calculateJewelleryPrice(
-          product,
-          pricingSettings,
-        );
-      }
-      return {
-        ...product.toObject(),
-        display_price: displayPrice,
-      };
-    },
-  );
+  const productsWithPrice = products.map((product) => {
+    let displayPrice = product.price;
+    if (product.product_type === JEWELLERY) {
+      displayPrice = calculateJewelleryPrice(product, pricingSettings);
+    }
+    return {
+      ...product.toObject(),
+      display_price: displayPrice,
+    };
+  });
 
   return {
     products: productsWithPrice,
@@ -165,11 +180,7 @@ export const getSingleProduct = async (id) => {
   let goldPrices = [];
 
   if (product.product_type === JEWELLERY) {
-    goldPrices =
-      calculateJewelleryVariantPrices(
-        product,
-        pricingSettings,
-      );
+    goldPrices = calculateJewelleryVariantPrices(product, pricingSettings);
   }
 
   const updatedOptions = product.options.map((option) => {
@@ -203,6 +214,7 @@ export const getSingleProduct = async (id) => {
   return {
     ...product.toObject(),
     options: updatedOptions,
+    success: true,
   };
 };
 
@@ -217,9 +229,12 @@ export const deleteProduct = async (id) => {
     };
   }
 
-  const result = await Product.findByIdAndUpdate({ _id: id }, { is_deleted: 1 });
+  const result = await Product.findByIdAndUpdate(
+    { _id: id },
+    { is_deleted: 1 },
+  );
   return {
     success: true,
-    data: result
-  }
+    data: result,
+  };
 };
