@@ -10,6 +10,7 @@ import {
   createProductValidation,
   editProductValidation,
   getProductsValidation,
+  productIdentifierValidation,
 } from "../validation/product.js";
 import { getProducts } from "../services/product.js";
 import {
@@ -43,7 +44,7 @@ router.put(
 );
 
 /* Get single product */
-router.get("/:id", validateRequestForParams(commonIdValidation), productController.getSingleProduct);
+router.get("/:identifier", validateRequestForParams(productIdentifierValidation), productController.getSingleProduct);
 
 /* Delete product by id */
 router.delete("/:id", verifyAdminToken, validateRequestForParams(commonIdValidation), productController.deleteProduct);

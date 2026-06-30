@@ -8,6 +8,7 @@ import {
   calculateJewelleryVariantPrices,
 } from "../utills/productPrice.helper.js";
 import { JEWELLERY } from "../helpers/constant.js";
+import mongoose from "mongoose";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -171,10 +172,18 @@ export const getProducts = async ({
 
 /* Get single product by id */
 export const getSingleProduct = async (id) => {
-  const product = await Product.findOne({
-    _id: id,
-    is_deleted: 0,
-  })
+
+  const query = mongoose.Types.ObjectId.isValid(id)
+    ? {
+      _id: id,
+      is_deleted: 0,
+    }
+    : {
+      slug: id,
+      is_deleted: 0,
+    };
+
+  const product = await Product.findOne(query)
     .populate("category_id")
     .populate("subcategory_id")
     .populate("attribute_id");

@@ -123,3 +123,11 @@ export const getProductsValidation = Joi.object({
   subcategory_id: objectId.optional(),
   product_type: Joi.string().valid(...productTypes).optional(),
 });
+
+/* Prodduct get by id or slug identifier validation */
+export const productIdentifierValidation = Joi.object({
+  identifier: Joi.string().required().messages({
+    "any.required": "Identifier is required",
+    "string.empty": "Identifier cannot be empty",
+  }),
+});

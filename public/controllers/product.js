@@ -62,7 +62,7 @@ export const getAllProduct = async (req, res, next) => {
 /* Get single product by id */
 export const getSingleProduct = async (req, res, next) => {
   try {
-    const result = await productService.getSingleProduct(req.params.id);
+    const result = await productService.getSingleProduct(req.params.identifier);
     if (!result.success) {
       return errorHandler(res, result.message);
     }
