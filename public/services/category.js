@@ -34,7 +34,7 @@ export const createCategory = async (payload) => {
   const category = await Category.create({
     name,
     attribute_id,
-    image
+    image,
   });
 
   const createdSubcategories = [];
@@ -283,7 +283,7 @@ export const getCategories = async (filter) => {
     }
 
     const categories = await Category.find(query).select(
-      "_id name attribute_id",
+      "_id name image attribute_id",
     );
 
     const categoriesWithSub = await Promise.all(
@@ -359,6 +359,6 @@ export const getSubCategories = async () => {
     const subCategories = await Subcategory.find(query).select("_id name");
     return subCategories;
   } catch (error) {
-    throw new Error("Internal server error", error.message)
+    throw new Error("Internal server error", error.message);
   }
 };
