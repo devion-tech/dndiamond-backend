@@ -1,5 +1,6 @@
 import Joi from "joi";
 import mongoose from "mongoose";
+import { productTypes } from "../helpers/constant.js";
 
 const objectId = Joi.string().custom((value, helpers) => {
   if (!mongoose.Types.ObjectId.isValid(value)) {
@@ -88,11 +89,9 @@ export const editProductValidation = Joi.object({
     "array.min": "At least one product image is required",
     "array.base": "Images must be an array",
   }),
-  product_type: Joi.string()
-    .valid("jewellery", "diamond", "watch")
-    .messages({
-      "any.only": "Invalid product type",
-    }),
+  product_type: Joi.string().valid("jewellery", "diamond", "watch").messages({
+    "any.only": "Invalid product type",
+  }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().messages({
     "number.base": "Price must be a number",
@@ -111,7 +110,9 @@ export const editProductValidation = Joi.object({
   attribute_id: objectId.messages({
     "any.required": "Attribute ID is required",
   }),
-  weight: Joi.number().messages({ "number.base": "Option weight must be a number" }),
+  weight: Joi.number().messages({
+    "number.base": "Option weight must be a number",
+  }),
   options: Joi.array().items(optionSchema).optional(),
 });
 
@@ -120,4 +121,5 @@ export const getProductsValidation = Joi.object({
   limit: Joi.number().required().min(1).default(5),
   search: Joi.string().allow(""),
   subcategory_id: objectId.optional(),
+  product_type: Joi.string().valid(...productTypes).optional(),
 });

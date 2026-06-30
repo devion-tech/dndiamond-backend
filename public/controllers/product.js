@@ -30,12 +30,15 @@ export const editProduct = async (req, res) => {
 /* Get product by all user */
 export const getAllProduct = async (req, res, next) => {
   try {
-    const { pageNumber, pageLimit, skip } = await getPagination(req.query);
+    const { pageNumber, pageLimit, skip, product_type } = await getPagination(
+      req.query,
+    );
     const result = await productService.getProducts({
       page: pageNumber,
       limit: pageLimit,
       skip,
       subcategory_id: req.query.subcategory_id,
+      product_type: req.query.product_type,
     });
 
     return success(
@@ -79,8 +82,7 @@ export const deleteProduct = async (req, res, next) => {
     }
 
     return success(res, {}, "Product delete successfully!", 200);
-
   } catch (error) {
     next(error);
   }
-}
+};
