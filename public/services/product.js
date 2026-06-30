@@ -130,10 +130,16 @@ export const getProducts = async ({
   product_type,
   filters,
   sort_by,
+  search
 }) => {
-  const filter = {
-    is_deleted: 0,
-  };
+  const filter = { is_deleted: 0 };
+
+  if (search) {
+    filter.name = {
+      $regex: search,
+      $options: "i",
+    };
+  }
 
   if (subcategory_id) {
     filter.subcategory_id = subcategory_id;

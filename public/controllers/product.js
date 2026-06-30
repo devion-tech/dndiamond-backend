@@ -30,15 +30,17 @@ export const editProduct = async (req, res) => {
 /* Get product by all user */
 export const getAllProduct = async (req, res, next) => {
   try {
-    const { pageNumber, pageLimit, skip, product_type } = await getPagination(req.body);
+    const body = req.body;
+    const { pageNumber, pageLimit, skip, product_type } = await getPagination(body);
     const result = await productService.getProducts({
       page: pageNumber,
       limit: pageLimit,
       skip,
-      subcategory_id: req.body.subcategory_id,
-      product_type: req.body.product_type,
-      filters: req.body.filters,
-      sort_by: req.body.sort_by,
+      subcategory_id: body.subcategory_id,
+      product_type: body.product_type,
+      filters: body.filters,
+      sort_by: body.sort_by,
+      search: body.search
     });
 
     return success(
