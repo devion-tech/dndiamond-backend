@@ -28,12 +28,8 @@ router.post(
   productController.createProduct,
 );
 
-/* Get all product by  */
-router.get(
-  "/",
-  validateRequestForQuery(getProductsValidation),
-  productController.getAllProduct,
-);
+/* Get all product with filter */
+router.post("/getProduct", validateRequest(getProductsValidation), productController.getAllProduct);
 
 /* Edit product */
 router.put(

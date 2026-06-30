@@ -128,8 +128,12 @@ export const getProducts = async ({
   skip,
   subcategory_id,
   product_type,
+  filters,
+  sort_by,
 }) => {
-  const filter = { is_deleted: 0 };
+  const filter = {
+    is_deleted: 0,
+  };
 
   if (subcategory_id) {
     filter.subcategory_id = subcategory_id;
@@ -139,36 +143,118 @@ export const getProducts = async ({
     filter.product_type = product_type;
   }
 
-  const [products, total] = await Promise.all([
-    Product.find(filter)
-      .select({ pricing: 0 })
-      .populate("subcategory_id")
-      // .populate("attribute_id")
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 }),
+  const optionFilters = [];
 
-    Product.countDocuments(filter),
-  ]);
+  if (filters) {
+    Object.entries(filters).forEach(
+      ([optionName, values]) => {
+        if (
+          Array.isArray(values) &&
+          values.length
+        ) {
+          optionFilters.push({
+            options: {
+              $elemMatch: {
+                name: optionName.toLowerCase(),
+                values: {
+                  $elemMatch: {
+                    value: {
+                      $in: values,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+      }
+    );
+  }
+
+  if (optionFilters.length) {
+    filter.$and = optionFilters;
+  }
+
+  const products = await Product.find(filter)
+    .select({ pricing: 0 })
+    .populate("subcategory_id");
 
   const pricingSettings = await Globals.findOne();
 
-  const productsWithPrice = products.map((product) => {
-    let displayPrice = product.price;
-    if (product.product_type === JEWELLERY) {
-      displayPrice = calculateJewelleryPrice(product, pricingSettings);
+  const productsWithPrice = products.map(
+    (product) => {
+      let displayPrice = product.price;
+
+      if (
+        product.product_type ===
+        JEWELLERY
+      ) {
+        displayPrice =
+          calculateJewelleryPrice(
+            product,
+            pricingSettings
+          );
+      }
+
+      return {
+        ...product.toObject(),
+        display_price: displayPrice,
+      };
     }
-    return {
-      ...product.toObject(),
-      display_price: displayPrice,
-    };
-  });
+
+  );
+
+  switch (sort_by) {
+    case "name_asc":
+      productsWithPrice.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      break;
+
+    case "name_desc":
+      productsWithPrice.sort((a, b) =>
+        b.name.localeCompare(a.name)
+      );
+      break;
+
+    case "price_low_high":
+      productsWithPrice.sort(
+        (a, b) =>
+          a.display_price -
+          b.display_price
+      );
+      break;
+
+    case "price_high_low":
+      productsWithPrice.sort(
+        (a, b) =>
+          b.display_price -
+          a.display_price
+      );
+      break;
+
+    default:
+      productsWithPrice.sort(
+        (a, b) =>
+          new Date(b.createdAt) -
+          new Date(a.createdAt)
+      );
+
+  }
+
+  const total = productsWithPrice.length;
+
+  const paginatedProducts = productsWithPrice.slice(
+    skip,
+    skip + limit
+  );
 
   return {
-    products: productsWithPrice,
+    products: paginatedProducts,
     total,
   };
 };
+
 
 /* Get single product by id */
 export const getSingleProduct = async (id) => {

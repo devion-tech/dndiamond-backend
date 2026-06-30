@@ -149,6 +149,17 @@ export const getProductsValidation = Joi.object({
   search: Joi.string().allow(""),
   subcategory_id: objectId.optional(),
   product_type: Joi.string().valid(...productTypes).optional(),
+  sort_by: Joi.string()
+    .valid(
+      "latest",
+      "name_asc",
+      "name_desc",
+      "price_low_high",
+      "price_high_low"
+    )
+    .default("latest"),
+
+  filters: Joi.object().optional(),
 });
 
 /* Prodduct get by id or slug identifier validation */
