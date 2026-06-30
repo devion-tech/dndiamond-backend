@@ -35,8 +35,8 @@ export const getAllProduct = async (req, res, next) => {
       page: pageNumber,
       limit: pageLimit,
       skip,
-      subcategory_id: req.query.subcategory_id,
-      product_type: req.query.product_type,
+      subcategory_id: req.body.subcategory_id,
+      product_type: req.body.product_type,
       filters: req.body.filters,
       sort_by: req.body.sort_by,
     });
