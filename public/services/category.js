@@ -173,7 +173,7 @@ export const updateSubcategory = async (payload) => {
 };
 
 export const updateCategory = async (payload) => {
-  const { id, name, attribute_id } = payload;
+  const { id, name, attribute_id, image } = payload;
 
   const category = await Category.findById(id);
   if (!category || category.is_deleted === 1) {
@@ -216,6 +216,7 @@ export const updateCategory = async (payload) => {
   // Update category
   if (name !== undefined) category.name = name;
   if (attribute_id !== undefined) category.attribute_id = attribute_id;
+  if (image !== undefined) category.image = image;
 
   await category.save();
 

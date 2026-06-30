@@ -67,7 +67,7 @@ export const updateSubcategory = async (req, res) => {
       return errorHandler(res, result.message, 400);
     }
 
-    return success(res, result.data, "Subcategory updated successfully", 200);
+    return success(res, {}, "Subcategory updated successfully", 200);
   } catch (error) {
     return errorHandler(res, "Internal server error", 500);
   }
@@ -85,7 +85,7 @@ export const updateCategory = async (req, res) => {
       return errorHandler(res, result.message, 400);
     }
 
-    return success(res, result.data, "Category updated successfully", 200);
+    return success(res, {}, "Category updated successfully", 200);
   } catch (error) {
     return errorHandler(res, "Internal server error", 500);
   }

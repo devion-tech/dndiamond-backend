@@ -34,6 +34,7 @@ export const updateCategoryValidation = Joi.object({
     "any.required": "Name is required",
     "string.empty": "Name cannot be empty",
   }),
+  image: Joi.string().required(),
   attribute_id: objectId.required().messages({
     "any.required": "Attribute ID is required",
   }),

@@ -77,8 +77,35 @@ export const createProductValidation = Joi.object({
   weight: Joi.number()
     .messages({ "number.base": "Option weight must be a number" })
     .required(),
-  options: Joi.array().items(optionSchema).optional(),
-});
+  options: Joi.array()
+    .items(optionSchema)
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "Options are required",
+      "array.min": "At least one option is required",
+      "array.base": "Options must be an array",
+    }),
+})
+  .custom((value, helpers) => {
+
+    if (value.product_type !== "jewellery") {
+      return value;
+    }
+
+    const hasGoldType = value.options.some(
+      (option) =>
+        option.name.trim().toLowerCase() === "gold_type"
+    );
+
+    if (!hasGoldType) {
+      return helpers.message(
+        "gold_type option is required for jewellery products"
+      );
+    }
+
+    return value;
+  });
 
 export const editProductValidation = Joi.object({
   name: Joi.string().trim().messages({
