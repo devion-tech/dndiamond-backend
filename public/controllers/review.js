@@ -20,3 +20,18 @@ export const addReview = async (req, res, next) => {
         next(error);
     }
 };
+
+/* Delete review */
+export const deleteReview = async (req, res, next) => {
+    try {
+        const result = await reviewService.deleteReview(req.params.id, req.user._id);
+
+        if (!result.success) {
+            return errorHandler(res, result?.message, 404);
+        }
+
+        return success(res, {}, result.message);
+    } catch (error) {
+        next(error);
+    }
+};

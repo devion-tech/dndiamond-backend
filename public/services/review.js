@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import Review from "../models/Review.js";
 
+/* Add review by user who order the product */
 export const addReview = async ({
     user_id,
     product_id,
@@ -51,5 +52,38 @@ export const addReview = async ({
         message:
             "Review added successfully",
         review: newReview,
+    };
+};
+
+export const deleteReview = async (
+    reviewId,
+    userId
+) => {
+    const review = await Review.findOne({
+        _id: reviewId,
+        is_deleted: 0,
+    });
+
+    if (!review) {
+        return {
+            success: false,
+            message: "Review not found",
+        };
+    }
+    if (review.user_id.toString() !== userId.toString()) {
+        return {
+            success: false,
+            message: "You can only delete your own review",
+        };
+    }
+
+    review.is_deleted = 1;
+
+    await review.save();
+
+    return {
+        success: true,
+        message:
+            "Review deleted successfully",
     };
 };
