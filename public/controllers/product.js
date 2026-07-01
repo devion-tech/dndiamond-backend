@@ -40,7 +40,7 @@ export const getAllProduct = async (req, res, next) => {
       product_type: body.product_type,
       filters: body.filters,
       sort_by: body.sort_by,
-      search: body.search
+      search: body.search,
     });
 
     return success(
@@ -64,7 +64,7 @@ export const getAllProduct = async (req, res, next) => {
 /* Get single product by id */
 export const getSingleProduct = async (req, res, next) => {
   try {
-    const result = await productService.getSingleProduct(req.params.identifier);
+    const result = await productService.getSingleProduct(req.params.identifier, req?.user?._id);
     if (!result.success) {
       return errorHandler(res, result.message);
     }

@@ -9,6 +9,7 @@ import {
 } from "../utills/productPrice.helper.js";
 import { JEWELLERY } from "../helpers/constant.js";
 import mongoose from "mongoose";
+import Review from "../models/review.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -249,11 +250,7 @@ export const getProducts = async ({
   }
 
   const total = productsWithPrice.length;
-
-  const paginatedProducts = productsWithPrice.slice(
-    skip,
-    skip + limit
-  );
+  const paginatedProducts = productsWithPrice.slice(skip, skip + limit);
 
   return {
     products: paginatedProducts,
@@ -263,7 +260,7 @@ export const getProducts = async ({
 
 
 /* Get single product by id */
-export const getSingleProduct = async (id) => {
+export const getSingleProduct = async (id, userId = null) => {
 
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
@@ -322,9 +319,34 @@ export const getSingleProduct = async (id) => {
     };
   });
 
+
+  const reviews = await Review.find({ product_id: product._id, is_deleted: 0 })
+    .populate("user_id", "name")
+    .sort({ createdAt: -1 });
+
+  const totalReviews = reviews.length;
+
+  const averageRating = totalReviews > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews : 0;
+
+  let myReview = null;
+
+  if (userId) {
+    myReview = await Review.findOne({
+      product_id: product._id,
+      user_id: userId,
+      is_deleted: 0,
+    }).select("rating review createdAt");
+  }
+
   return {
     ...product.toObject(),
     options: updatedOptions,
+    review_summary: {
+      average_rating: Number(averageRating.toFixed(1)),
+      total_reviews: totalReviews,
+    },
+    my_review: myReview,
+    reviews,
     success: true,
   };
 };
