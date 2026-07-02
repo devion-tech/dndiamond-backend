@@ -38,3 +38,23 @@ export const loginUserValidation = Joi.object({
     "string.empty": "Password cannot be empty",
   }),
 });
+
+export const updateUserValidation = Joi.object({
+  name: Joi.string().required().messages({
+    "any.required": "Name is required",
+    "string.empty": "Name cannot be empty",
+  }),
+  email: Joi.string().required().messages({
+    "any.required": "Email is required",
+    "string.empty": "Email cannot be empty",
+  }),
+  phone: Joi.string().required().messages({
+    "any.required": "Phone number is required",
+    "string.empty": "Phone number cannot be empty",
+  }),
+  password: Joi.string().required().messages({
+    "any.required": "Password is required",
+    "string.empty": "Password cannot be empty",
+  }),
+  isBlock: Joi.number().valid(0, 1).optional(),
+});
