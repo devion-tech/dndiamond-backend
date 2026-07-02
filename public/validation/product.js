@@ -77,35 +77,28 @@ export const createProductValidation = Joi.object({
   weight: Joi.number()
     .messages({ "number.base": "Option weight must be a number" })
     .required(),
-  options: Joi.array()
-    .items(optionSchema)
-    .min(1)
-    .required()
-    .messages({
-      "any.required": "Options are required",
-      "array.min": "At least one option is required",
-      "array.base": "Options must be an array",
-    }),
-})
-  .custom((value, helpers) => {
-
-    if (value.product_type !== "jewellery") {
-      return value;
-    }
-
-    const hasGoldType = value.options.some(
-      (option) =>
-        option.name.trim().toLowerCase() === "gold_type"
-    );
-
-    if (!hasGoldType) {
-      return helpers.message(
-        "gold_type option is required for jewellery products"
-      );
-    }
-
+  options: Joi.array().items(optionSchema).min(1).required().messages({
+    "any.required": "Options are required",
+    "array.min": "At least one option is required",
+    "array.base": "Options must be an array",
+  }),
+}).custom((value, helpers) => {
+  if (value.product_type !== "jewellery") {
     return value;
-  });
+  }
+
+  const hasGoldType = value.options.some(
+    (option) => option.name.trim().toLowerCase() === "gold_type",
+  );
+
+  if (!hasGoldType) {
+    return helpers.message(
+      "gold_type option is required for jewellery products",
+    );
+  }
+
+  return value;
+});
 
 export const editProductValidation = Joi.object({
   name: Joi.string().trim().messages({
@@ -147,19 +140,21 @@ export const getProductsValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),
   limit: Joi.number().required().min(1).default(5),
   search: Joi.string().allow(""),
-  product_type: Joi.string().valid(...productTypes).optional(),
+  product_type: Joi.string()
+    .valid(...productTypes)
+    .optional(),
   sort_by: Joi.string()
     .valid(
       "latest",
       "name_asc",
       "name_desc",
       "price_low_high",
-      "price_high_low"
+      "price_high_low",
     )
     .default("latest"),
 
   filters: Joi.object().optional(),
-  product_slug: Joi.string().optional(),
+  category_slug: Joi.string().optional(),
   subcategory_slug: Joi.string().optional(),
 });
 

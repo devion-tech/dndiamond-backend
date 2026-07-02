@@ -131,7 +131,7 @@ export const getProducts = async ({
   filters,
   sort_by,
   search,
-  product_slug,
+  category_slug,
   subcategory_slug,
 }) => {
   const filter = { is_deleted: 0 };
@@ -143,13 +143,19 @@ export const getProducts = async ({
     };
   }
 
-  if (product_slug) {
-    const category = await Category.findOne({ slug: product_slug, is_deleted: 0 });
+  if (category_slug) {
+    const category = await Category.findOne({
+      slug: category_slug,
+      is_deleted: 0,
+    });
     filter.category_id = category._id;
   }
 
   if (subcategory_slug) {
-    const subcategory = await Subcategory.findOne({ slug: subcategory_slug, is_deleted: 0 });
+    const subcategory = await Subcategory.findOne({
+      slug: subcategory_slug,
+      is_deleted: 0,
+    });
     filter.subcategory_id = subcategory._id;
   }
 
@@ -160,29 +166,24 @@ export const getProducts = async ({
   const optionFilters = [];
 
   if (filters) {
-    Object.entries(filters).forEach(
-      ([optionName, values]) => {
-        if (
-          Array.isArray(values) &&
-          values.length
-        ) {
-          optionFilters.push({
-            options: {
-              $elemMatch: {
-                name: optionName.toLowerCase(),
-                values: {
-                  $elemMatch: {
-                    value: {
-                      $in: values,
-                    },
+    Object.entries(filters).forEach(([optionName, values]) => {
+      if (Array.isArray(values) && values.length) {
+        optionFilters.push({
+          options: {
+            $elemMatch: {
+              name: optionName.toLowerCase(),
+              values: {
+                $elemMatch: {
+                  value: {
+                    $in: values,
                   },
                 },
               },
             },
-          });
-        }
+          },
+        });
       }
-    );
+    });
   }
 
   if (optionFilters.length) {
@@ -195,65 +196,40 @@ export const getProducts = async ({
 
   const pricingSettings = await Globals.findOne();
 
-  const productsWithPrice = products.map(
-    (product) => {
-      let displayPrice = product.price;
+  const productsWithPrice = products.map((product) => {
+    let displayPrice = product.price;
 
-      if (
-        product.product_type ===
-        JEWELLERY
-      ) {
-        displayPrice =
-          calculateJewelleryPrice(
-            product,
-            pricingSettings
-          );
-      }
-
-      return {
-        ...product.toObject(),
-        display_price: displayPrice,
-      };
+    if (product.product_type === JEWELLERY) {
+      displayPrice = calculateJewelleryPrice(product, pricingSettings);
     }
 
-  );
+    return {
+      ...product.toObject(),
+      display_price: displayPrice,
+    };
+  });
 
   switch (sort_by) {
     case "name_asc":
-      productsWithPrice.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+      productsWithPrice.sort((a, b) => a.name.localeCompare(b.name));
       break;
 
     case "name_desc":
-      productsWithPrice.sort((a, b) =>
-        b.name.localeCompare(a.name)
-      );
+      productsWithPrice.sort((a, b) => b.name.localeCompare(a.name));
       break;
 
     case "price_low_high":
-      productsWithPrice.sort(
-        (a, b) =>
-          a.display_price -
-          b.display_price
-      );
+      productsWithPrice.sort((a, b) => a.display_price - b.display_price);
       break;
 
     case "price_high_low":
-      productsWithPrice.sort(
-        (a, b) =>
-          b.display_price -
-          a.display_price
-      );
+      productsWithPrice.sort((a, b) => b.display_price - a.display_price);
       break;
 
     default:
       productsWithPrice.sort(
-        (a, b) =>
-          new Date(b.createdAt) -
-          new Date(a.createdAt)
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
       );
-
   }
 
   const total = productsWithPrice.length;
@@ -267,16 +243,15 @@ export const getProducts = async ({
 
 /* Get single product by id */
 export const getSingleProduct = async (id, userId = null) => {
-
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
-      _id: id,
-      is_deleted: 0,
-    }
+        _id: id,
+        is_deleted: 0,
+      }
     : {
-      slug: id,
-      is_deleted: 0,
-    };
+        slug: id,
+        is_deleted: 0,
+      };
 
   const product = await Product.findOne(query)
     .populate("category_id")
@@ -325,14 +300,16 @@ export const getSingleProduct = async (id, userId = null) => {
     };
   });
 
-
   const reviews = await Review.find({ product_id: product._id, is_deleted: 0 })
     .populate("user_id", "name")
     .sort({ createdAt: -1 });
 
   const totalReviews = reviews.length;
 
-  const averageRating = totalReviews > 0 ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews : 0;
+  const averageRating =
+    totalReviews > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews
+      : 0;
 
   let myReview = null;
 

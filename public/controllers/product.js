@@ -31,7 +31,8 @@ export const editProduct = async (req, res) => {
 export const getAllProduct = async (req, res, next) => {
   try {
     const body = req.body;
-    const { pageNumber, pageLimit, skip, product_type } = await getPagination(body);
+    const { pageNumber, pageLimit, skip, product_type } =
+      await getPagination(body);
     const result = await productService.getProducts({
       page: pageNumber,
       limit: pageLimit,
@@ -40,7 +41,7 @@ export const getAllProduct = async (req, res, next) => {
       filters: body.filters,
       sort_by: body.sort_by,
       search: body.search,
-      product_slug: body.product_slug,
+      category_slug: body.category_slug,
       subcategory_slug: body.subcategory_slug,
     });
 
@@ -65,7 +66,10 @@ export const getAllProduct = async (req, res, next) => {
 /* Get single product by id */
 export const getSingleProduct = async (req, res, next) => {
   try {
-    const result = await productService.getSingleProduct(req.params.identifier, req?.user?._id);
+    const result = await productService.getSingleProduct(
+      req.params.identifier,
+      req?.user?._id,
+    );
     if (!result.success) {
       return errorHandler(res, result.message);
     }
