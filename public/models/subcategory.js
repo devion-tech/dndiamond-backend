@@ -12,6 +12,13 @@ const SubcategorySchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      lowercase: true,
+    },
     is_deleted: {
       type: Number,
       default: 0,

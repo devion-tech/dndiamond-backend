@@ -147,7 +147,6 @@ export const getProductsValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),
   limit: Joi.number().required().min(1).default(5),
   search: Joi.string().allow(""),
-  subcategory_id: objectId.optional(),
   product_type: Joi.string().valid(...productTypes).optional(),
   sort_by: Joi.string()
     .valid(
@@ -160,9 +159,11 @@ export const getProductsValidation = Joi.object({
     .default("latest"),
 
   filters: Joi.object().optional(),
+  product_slug: Joi.string().optional(),
+  subcategory_slug: Joi.string().optional(),
 });
 
-/* Prodduct get by id or slug identifier validation */
+/* Product get by id or slug identifier validation */
 export const productIdentifierValidation = Joi.object({
   identifier: Joi.string().required().messages({
     "any.required": "Identifier is required",

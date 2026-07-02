@@ -127,11 +127,12 @@ export const getProducts = async ({
   page,
   limit,
   skip,
-  subcategory_id,
   product_type,
   filters,
   sort_by,
-  search
+  search,
+  product_slug,
+  subcategory_slug,
 }) => {
   const filter = { is_deleted: 0 };
 
@@ -142,8 +143,14 @@ export const getProducts = async ({
     };
   }
 
-  if (subcategory_id) {
-    filter.subcategory_id = subcategory_id;
+  if (product_slug) {
+    const category = await Category.findOne({ slug: product_slug, is_deleted: 0 });
+    filter.category_id = category._id;
+  }
+
+  if (subcategory_slug) {
+    const subcategory = await Subcategory.findOne({ slug: subcategory_slug, is_deleted: 0 });
+    filter.subcategory_id = subcategory._id;
   }
 
   if (product_type) {
@@ -257,7 +264,6 @@ export const getProducts = async ({
     total,
   };
 };
-
 
 /* Get single product by id */
 export const getSingleProduct = async (id, userId = null) => {

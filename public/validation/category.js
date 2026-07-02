@@ -17,6 +17,10 @@ export const createCategoryValidation = Joi.object({
     "any.required": "Attribute ID is required",
   }),
   image: Joi.string().required(),
+  slug: Joi.string().required().trim().messages({
+    "any.required": "Slug is required",
+    "string.empty": "Slug cannot be empty",
+  }),
   subcategories: Joi.array()
     .items(
       Joi.object({
@@ -47,6 +51,10 @@ export const createSubcategoryValidation = Joi.object({
   }),
   parent_id: objectId.required().messages({
     "any.required": "Parent category ID is required",
+  }),
+  slug: Joi.string().required().trim().messages({
+    "any.required": "Slug is required",
+    "string.empty": "Slug cannot be empty",
   }),
 });
 

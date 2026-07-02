@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
+import { generateSlug } from "../helpers/slug.js";
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -10,7 +11,7 @@ export const createCategory = async (payload) => {
 
   const existing = await Category.findOne({
     name: {
-      $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+      $regex: `^${escapeRegex(name.trim())}$`,
       $options: "i",
     },
     is_deleted: 0,
@@ -31,10 +32,13 @@ export const createCategory = async (payload) => {
     };
   }
 
+  const slug = await generateSlug(name);
+
   const category = await Category.create({
     name,
     attribute_id,
     image,
+    slug,
   });
 
   const createdSubcategories = [];
@@ -101,7 +105,7 @@ export const createSubcategory = async (payload) => {
   }
 
   const existing = await Subcategory.findOne({
-    name: { $regex: `^${escapeRegex(name)}$`, $options: "i" },
+    name: { $regex: `^${escapeRegex(name.trim())}$`, $options: "i" },
     parent_id,
     is_deleted: 0,
   });
@@ -113,9 +117,11 @@ export const createSubcategory = async (payload) => {
     };
   }
 
+  const slug = await generateSlug(name);
   const subcategory = await Subcategory.create({
     name,
     parent_id,
+    slug,
   });
 
   return {

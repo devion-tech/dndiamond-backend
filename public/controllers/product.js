@@ -36,11 +36,12 @@ export const getAllProduct = async (req, res, next) => {
       page: pageNumber,
       limit: pageLimit,
       skip,
-      subcategory_id: body.subcategory_id,
       product_type: body.product_type,
       filters: body.filters,
       sort_by: body.sort_by,
       search: body.search,
+      product_slug: body.product_slug,
+      subcategory_slug: body.subcategory_slug,
     });
 
     return success(

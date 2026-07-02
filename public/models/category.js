@@ -17,6 +17,13 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    slug: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+      lowercase: true,
+    },
     is_deleted: {
       type: Number,
       default: 0,

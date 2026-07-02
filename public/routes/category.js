@@ -14,7 +14,7 @@ const router = new Router();
 
 router.get("/subcategory", verifyAdminToken, categoryController.getSubCategories);
 router.get("/", categoryController.getCategories);
-router.get("/:id", validateRequestForParams(commonIdValidation), categoryController.getCategoryById)
+router.get("/:id", validateRequestForParams(commonIdValidation), categoryController.getCategoryById);
 router.post("/", verifyAdminToken, validateRequest(createCategoryValidation), categoryController.createCategory); /* Create category */
 router.post("/subcategory", verifyAdminToken, validateRequest(createSubcategoryValidation), categoryController.createSubcategory); /* Create sub-category */
 router.put("/subcategory/:id", verifyAdminToken, validateRequest(updateSubcategoryValidation), categoryController.updateSubcategory); /* Update sub-category */
