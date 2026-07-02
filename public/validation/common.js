@@ -1,18 +1,6 @@
 import Joi from "joi";
 import mongoose from "mongoose";
 
-export const fileDeleteValidation = Joi.object({
-  ids: Joi.array()
-    .items(Joi.string().trim().required())
-    .min(1)
-    .required()
-    .messages({
-      "any.required": "Ids are required",
-      "array.base": "Ids must be an array",
-      "array.min": "At least one id is required",
-    })
-});
-
 // Note :- common pagination validation with id field
 export const paginationValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),

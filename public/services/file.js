@@ -3,6 +3,7 @@ import cloudinary, {
   uploadToCloudinary,
   destroyFiles,
 } from "../middelware/multer.js";
+import Landing from "../models/landing.js";
 
 /* Add new product image by admin */
 export const addNewFile = async (files) => {
@@ -24,4 +25,31 @@ export const deleteFile = async (ids) => {
   } catch (error) {
     throw new Error(error, "Failed to delete  file!");
   }
+};
+
+/* Create landing page hero image */
+export const createLanding = async ({ title, description, files }) => {
+  const images = [];
+
+  if (files && files.length) {
+    for (const file of files) {
+      const uploaded = await uploadToCloudinary(file, "landing");
+
+      images.push({
+        image: uploaded.url,
+        public_id: uploaded.publicId,
+      });
+    }
+  }
+
+  const landing = await Landing.create({
+    title,
+    description,
+    image: images,
+  });
+
+  return {
+    success: true,
+    data: landing,
+  };
 };
