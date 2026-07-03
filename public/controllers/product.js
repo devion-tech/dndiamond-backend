@@ -42,6 +42,7 @@ export const getAllProduct = async (req, res, next) => {
       search: body.search,
       category_slug: body.category_slug,
       subcategory_slug: body.subcategory_slug,
+      user_id: req?.user?._id,
     });
 
     return success(

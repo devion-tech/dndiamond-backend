@@ -12,7 +12,7 @@ const router = new Router();
 router.post("/", verifyAdminToken, validateRequest(createProductValidation), productController.createProduct);
 
 /* Get all product with filter */
-router.post("/getProduct", validateRequest(getProductsValidation), productController.getAllProduct);
+router.post("/getProduct", optionalAuth, validateRequest(getProductsValidation), productController.getAllProduct);
 
 /* Edit product */
 router.put("/:id", verifyAdminToken, validateRequest(editProductValidation), productController.editProduct);

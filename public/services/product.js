@@ -10,6 +10,7 @@ import {
 import { JEWELLERY } from "../helpers/constant.js";
 import mongoose from "mongoose";
 import Review from "../models/review.js";
+import Wishlist from "../models/wishlist.js";
 
 export const createProduct = async (payload) => {
   const { name, slug, category_id, subcategory_id, attribute_id } = payload;
@@ -133,6 +134,7 @@ export const getProducts = async ({
   search,
   category_slug,
   subcategory_slug,
+  user_id = null
 }) => {
   const filter = { is_deleted: 0 };
 
@@ -194,6 +196,19 @@ export const getProducts = async ({
     .select({ pricing: 0 })
     .populate("subcategory_id");
 
+  let wishlistProductIds = new Set();
+
+  if (user_id) {
+    const wishlist = await Wishlist.findOne({ user_id });
+    wishlistProductIds =
+      new Set(
+        wishlist.products.map(
+          (item) =>
+            item.product_id.toString()
+        )
+      );
+  }
+
   const pricingSettings = await Globals.findOne();
 
   const productsWithPrice = products.map((product) => {
@@ -206,6 +221,11 @@ export const getProducts = async ({
     return {
       ...product.toObject(),
       display_price: displayPrice,
+      is_wishlist: user_id
+        ? wishlistProductIds.has(
+          product._id.toString()
+        )
+        : false,
     };
   });
 
@@ -245,15 +265,15 @@ export const getProducts = async ({
 export const getSingleProduct = async (id, userId = null) => {
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
-        _id: id,
-        is_deleted: 0,
-      }
+      _id: id,
+      is_deleted: 0,
+    }
     : {
-        slug: id,
-        is_deleted: 0,
-      };
+      slug: id,
+      is_deleted: 0,
+    };
 
-  const product = await Product.findOne(query)
+  const product = await Product.findOne(query).select("-updatedAt -__v")
     .populate("category_id")
     .populate("subcategory_id")
     .populate("attribute_id");
@@ -321,6 +341,19 @@ export const getSingleProduct = async (id, userId = null) => {
     }).select("rating review createdAt");
   }
 
+  let isWishlist = false;
+
+  if (userId) {
+    const wishlist =
+      await Wishlist.findOne({
+        user_id: userId,
+        "products.product_id":
+          product._id,
+      });
+
+    isWishlist = !!wishlist;
+  }
+
   return {
     ...product.toObject(),
     options: updatedOptions,
@@ -330,6 +363,7 @@ export const getSingleProduct = async (id, userId = null) => {
     },
     my_review: myReview,
     reviews,
+    is_wishlist: isWishlist,
     success: true,
   };
 };

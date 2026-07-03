@@ -69,7 +69,6 @@ export const optionalAuth = async (req, res, next) => {
         }
 
         const getUser = await User.findById(user._id);
-
         if (getUser) {
           req.user = getUser._id;
         }
