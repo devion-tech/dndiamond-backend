@@ -1,7 +1,6 @@
 import { errorHandler, success } from "../helpers/response.js";
 import * as fileService from "../services/file.js";
 
-
 /* Add files or documents for user */
 export const addFiles = async (req, res, next) => {
   try {
@@ -23,6 +22,24 @@ export const deleteImage = async (req, res, next) => {
     const response = await fileService.deleteFile(ids);
     success(res, {}, "Image deleted successfully!", 200);
     return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* Create landing page hero image */
+export const createLanding = async (req, res, next) => {
+  try {
+    const result = await fileService.createLanding({
+      ...req.body,
+      files: req.files,
+    });
+
+    if (!result.success) {
+      return errorHandler(res, result.message);
+    }
+
+    return success(res, result.data, "Hero section Image added successfully");
   } catch (error) {
     next(error);
   }
