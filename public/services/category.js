@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
+import Product from "../models/product.js";
 import { generateSlug } from "../helpers/slug.js";
 
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -142,14 +143,27 @@ export const updateSubcategory = async (payload) => {
     };
   }
 
-  const query = {
-    _id: { $ne: id },
-    name: { $regex: `^${escapeRegex(name || existing.name)}$`, $options: "i" },
-    parent_id: parent_id || existing.parent_id,
-    is_deleted: 0,
-  };
+  if (name !== undefined && name !== existing.name) {
+    const newSlug = await generateSlug(name);
 
-  if (parent_id !== undefined) {
+    const slugExists = await Subcategory.findOne({
+      _id: { $ne: id },
+      slug: newSlug,
+      is_deleted: 0,
+    });
+
+    if (slugExists) {
+      return {
+        success: false,
+        message: `Subcategory slug "${newSlug}" already exists`,
+      };
+    }
+
+    existing.name = name;
+    existing.slug = newSlug;
+  }
+
+  if (parent_id !== undefined && parent_id !== existing.parent_id) {
     const category = await Category.findById(parent_id);
     if (!category || category.is_deleted === 1) {
       return {
@@ -157,18 +171,28 @@ export const updateSubcategory = async (payload) => {
         message: `Category with id ${parent_id} not found`,
       };
     }
+
+    existing.parent_id = parent_id;
+
+    await Product.updateMany(
+      { subcategory_id: id, is_deleted: 0 },
+      { category_id: parent_id },
+    );
   }
 
-  const duplicate = await Subcategory.findOne(query);
+  const duplicate = await Subcategory.findOne({
+    _id: { $ne: id },
+    name: { $regex: `^${escapeRegex(existing.name)}$`, $options: "i" },
+    parent_id: existing.parent_id,
+    is_deleted: 0,
+  });
+
   if (duplicate) {
     return {
       success: false,
-      message: `Subcategory ${name || existing.name} already exists for this category`,
+      message: `Subcategory ${existing.name} already exists for this category`,
     };
   }
-
-  if (name !== undefined) existing.name = name;
-  if (parent_id !== undefined) existing.parent_id = parent_id;
 
   await existing.save();
 
@@ -289,7 +313,7 @@ export const getCategories = async (filter) => {
     }
 
     const categories = await Category.find(query).select(
-      "_id name image attribute_id",
+      "_id name image attribute_id slug",
     );
 
     const categoriesWithSub = await Promise.all(
@@ -297,7 +321,7 @@ export const getCategories = async (filter) => {
         const subcategories = await Subcategory.find({
           parent_id: category._id,
           is_deleted: 0,
-        }).select("_id name ");
+        }).select("_id name slug");
 
         return {
           ...category.toObject(),
