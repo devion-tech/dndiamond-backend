@@ -8,6 +8,7 @@ import productRouter from "./product.js";
 import cartRouter from "./cart.js";
 import wishlistRouter from "./wishlist.js";
 import reviewRouter from "./review.js";
+import promoCodeRouter from "./promoCode.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -22,5 +23,6 @@ router.use("/product", productRouter);
 router.use("/cart", cartRouter);
 router.use("/wishlist", wishlistRouter);
 router.use("/review", reviewRouter);
+router.use("/promoCodes", promoCodeRouter);
 
 export default router;

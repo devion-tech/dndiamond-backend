@@ -31,8 +31,7 @@ export const editProduct = async (req, res) => {
 export const getAllProduct = async (req, res, next) => {
   try {
     const body = req.body;
-    const { pageNumber, pageLimit, skip, product_type } =
-      await getPagination(body);
+    const { pageNumber, pageLimit, skip } = await getPagination(body);
     const result = await productService.getProducts({
       page: pageNumber,
       limit: pageLimit,

@@ -24,7 +24,7 @@ export const objectId = Joi.string().custom((value, helpers) => {
 });
 
 /* Pagination required */
-export const pagValidation = Joi.object({
+export const pageValidation = Joi.object({
   page: Joi.number().required().min(1).default(1),
   limit: Joi.number().required().min(1).default(5).max(50),
   search: Joi.string().allow("")

@@ -56,6 +56,12 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
     weight: {
       type: Number,
       required: true,

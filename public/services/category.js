@@ -4,8 +4,7 @@ import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Product from "../models/product.js";
 import { generateSlug } from "../helpers/slug.js";
-
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+import { escapeRegex } from "../helpers/constant.js";
 
 export const createCategory = async (payload) => {
   const { name, attribute_id, image, subcategories = [] } = payload;
@@ -244,7 +243,11 @@ export const updateCategory = async (payload) => {
   }
 
   // Update category
-  if (name !== undefined) category.name = name;
+  if (name !== undefined) {
+    category.name = name;
+    category.slug = await generateSlug(name);
+  }
+
   if (attribute_id !== undefined) category.attribute_id = attribute_id;
   if (image !== undefined) category.image = image;
 
