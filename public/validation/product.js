@@ -120,6 +120,10 @@ export const editProductValidation = Joi.object({
   price: Joi.number().messages({
     "number.base": "Price must be a number",
   }),
+  sku: Joi.string().required().trim().messages({
+    "any.required": "SKU is required",
+    "string.empty": "SKU cannot be empty",
+  }),
   pricing: Joi.object({
     diamond_cost: Joi.number().min(0).default(0),
     gemstone_cost: Joi.number().min(0).default(0),

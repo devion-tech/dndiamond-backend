@@ -150,7 +150,7 @@ export const getProducts = async ({
       slug: category_slug,
       is_deleted: 0,
     });
-    filter.category_id = category._id;
+    filter.category_id = category?._id;
   }
 
   if (subcategory_slug) {
@@ -158,7 +158,7 @@ export const getProducts = async ({
       slug: subcategory_slug,
       is_deleted: 0,
     });
-    filter.subcategory_id = subcategory._id;
+    filter.subcategory_id = subcategory?._id;
   }
 
   if (product_type) {
@@ -208,7 +208,6 @@ export const getProducts = async ({
         )
       );
   }
-
   const pricingSettings = await Globals.findOne();
 
   const productsWithPrice = products.map((product) => {
