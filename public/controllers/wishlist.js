@@ -12,7 +12,6 @@ export const addWishlist = async (req, res, next) => {
             res,
             {
                 count: result.wishlist_count,
-                is_wishlisted: result.is_wishlisted
             },
             result.is_wishlisted
                 ? "Product added to wishlist"
