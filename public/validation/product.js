@@ -77,6 +77,10 @@ export const createProductValidation = Joi.object({
   weight: Joi.number()
     .messages({ "number.base": "Option weight must be a number" })
     .required(),
+  sku: Joi.string().required().trim().messages({
+    "any.required": "SKU is required",
+    "string.empty": "SKU cannot be empty",
+  }),
   options: Joi.array().items(optionSchema).min(1).required().messages({
     "any.required": "Options are required",
     "array.min": "At least one option is required",
