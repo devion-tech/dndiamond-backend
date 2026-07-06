@@ -53,6 +53,7 @@ export const toggleWishlist = async (userId, productId) => {
     return {
         success: true,
         is_wishlisted: true,
+        wishlist_count: wishlist.products.length,
         wishlist,
     };
 };
