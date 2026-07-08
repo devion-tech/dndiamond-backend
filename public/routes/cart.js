@@ -8,7 +8,7 @@ import { verifytoken } from "../utills/jwt.helper.js";
 const router = new Router();
 
 /* Add to cart api with validation */
-router.post("/", validateRequest(addToCartValidation), cartController.addToCart);
+router.post("/", optionalAuth, validateRequest(addToCartValidation), cartController.addToCart);
 router.get("/getCart", optionalAuth, validateRequestForQuery(getCartValidation), cartController.getCart);  /* Get cart with optional token  */
 router.patch("/updateCart", optionalAuth, validateRequest(updateCartValidation), cartController.updateCart);
 router.post("/deleteCart", optionalAuth, validateRequest(deleteCartValidation), cartController.deleteCartItem);
