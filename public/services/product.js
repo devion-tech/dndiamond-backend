@@ -11,9 +11,12 @@ import { JEWELLERY } from "../helpers/constant.js";
 import mongoose from "mongoose";
 import Review from "../models/review.js";
 import Wishlist from "../models/wishlist.js";
+import { generateSlug } from "../helpers/slug.js";
 
 export const createProduct = async (payload) => {
-  const { name, slug, category_id, subcategory_id, attribute_id } = payload;
+  const { name, category_id, subcategory_id, attribute_id } = payload;
+
+  payload.slug = await generateSlug(name);
 
   const category = await Category.findOne({ _id: category_id, is_deleted: 0 });
   if (!category) {
@@ -39,16 +42,6 @@ export const createProduct = async (payload) => {
     return {
       success: false,
       message: `Attribute with id ${attribute_id} not found`,
-    };
-  }
-
-  const existingSlug = slug
-    ? await Product.findOne({ slug, is_deleted: 0 })
-    : null;
-  if (existingSlug) {
-    return {
-      success: false,
-      message: `Slug ${slug} already exists`,
     };
   }
 
