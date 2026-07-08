@@ -91,10 +91,7 @@ export const addToCart = async (
 };
 
 /* Get cart details */
-export const getCart = async (
-    userId,
-    guestId
-) => {
+export const getCart = async (userId, guestId) => {
     if (!userId && !guestId) {
         return {
             items: [],
@@ -138,20 +135,16 @@ export const getCart = async (
             let currentPrice =
                 product.price || 0;
 
-            if (
-                product.product_type === JEWELLERY
-            ) {
-                currentPrice =
-                    calculateSelectedGoldPrice(
-                        product,
-                        pricingSettings,
-                        item.selected_options.gold_type
-                    );
+            if (product.product_type === JEWELLERY) {
+                currentPrice = calculateSelectedGoldPrice(
+                    product,
+                    pricingSettings,
+                    item.selected_options.gold_type
+                );
             }
 
             const total = currentPrice * item.quantity;
             subtotal += total;
-            console.log('item :>>12212 ', item);
             return {
                 item_id: item._id,
                 quantity: item.quantity,
@@ -160,12 +153,18 @@ export const getCart = async (
                 current_price: currentPrice,
                 price_changed: currentPrice !== item.price_snapshot,
                 total,
-                product,
+                product: {
+                    _id: product._id,
+                    name: product.name,
+                    slug: product.slug,
+                    image: product.image,
+                },
             };
         })
     );
 
     return {
+        _id: cart._id,
         items: items.filter(Boolean),
         total_items: items.filter(Boolean).length,
         subtotal,

@@ -268,7 +268,7 @@ export const getSingleProduct = async (id, userId = null) => {
   const product = await Product.findOne(query).select("-updatedAt -__v")
     .populate("category_id")
     .populate("subcategory_id")
-    .populate("attribute_id");
+  // .populate("attribute_id");
 
   if (!product) {
     return {

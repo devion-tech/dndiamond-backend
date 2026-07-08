@@ -11,7 +11,7 @@ export const addToCart = async (req, res, next) => {
 
         return success(
             res,
-            result,
+            {},
             "Product added to cart successfully"
         );
     } catch (error) {
