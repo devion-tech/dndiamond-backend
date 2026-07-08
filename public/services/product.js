@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import Review from "../models/review.js";
 import Wishlist from "../models/wishlist.js";
 import { generateSlug } from "../helpers/slug.js";
+import Cart from "../models/Cart.js";
 
 export const createProduct = async (payload) => {
   const { name, category_id, subcategory_id, attribute_id } = payload;
@@ -268,7 +269,6 @@ export const getSingleProduct = async (id, userId = null) => {
   const product = await Product.findOne(query).select("-updatedAt -__v")
     .populate("category_id")
     .populate("subcategory_id")
-  // .populate("attribute_id");
 
   if (!product) {
     return {
@@ -324,6 +324,7 @@ export const getSingleProduct = async (id, userId = null) => {
       : 0;
 
   let myReview = null;
+  let isInCart = null;
 
   if (userId) {
     myReview = await Review.findOne({
@@ -331,6 +332,18 @@ export const getSingleProduct = async (id, userId = null) => {
       user_id: userId,
       is_deleted: 0,
     }).select("rating review createdAt");
+
+    isInCart = await Cart.exists({
+      user_id: userId,
+      "items.product_id": product._id,
+    });
+  }
+
+  if (guestId) {
+    isInCart = await Cart.exists({
+      guest_id: guestId,
+      "items.product_id": product._id,
+    });
   }
 
   let isWishlist = false;
@@ -355,6 +368,7 @@ export const getSingleProduct = async (id, userId = null) => {
     },
     my_review: myReview,
     reviews,
+    is_in_cart: !!isInCart,
     is_wishlist: isWishlist,
     success: true,
   };
