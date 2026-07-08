@@ -1,3 +1,4 @@
+import { JEWELLERY } from "../helpers/constant.js";
 import Globals from "../models/globals.js";
 import Product from "../models/product.js";
 import Wishlist from "../models/Wishlist.js";
@@ -88,12 +89,11 @@ export const getWishlist = async ({ userId, page, limit }) => {
     const startIndex = (page - 1) * limit;
 
     const endIndex = startIndex + limit;
-
     const products = wishlist.products
         .slice(startIndex, endIndex)
         .map((item) => {
             const product = item.product_id.toObject();
-            if (product.product_type === "jewelry") {
+            if (product.product_type === JEWELLERY) {
                 product.display_price = calculateJewelleryPrice(product, pricingSettings);
             } else {
                 product.display_price = product.price;
