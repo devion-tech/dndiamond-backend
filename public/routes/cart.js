@@ -13,6 +13,6 @@ router.get("/getCart", optionalAuth, validateRequestForQuery(getCartValidation),
 router.patch("/updateCart", optionalAuth, validateRequest(updateCartValidation), cartController.updateCart);
 router.post("/deleteCart", optionalAuth, validateRequest(deleteCartValidation), cartController.deleteCartItem);
 router.delete("/clear", optionalAuth, validateRequestForQuery(getCartValidation), cartController.clearCart);
-router.post("/merge", verifytoken, validateRequest(getCartValidation), cartController.mergeCart);
+router.post("/merge", optionalAuth, validateRequest(getCartValidation), cartController.mergeCart);
 
 export default router;
