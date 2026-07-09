@@ -69,6 +69,7 @@ export const getSingleProduct = async (req, res, next) => {
     const result = await productService.getSingleProduct(
       req.params.identifier,
       req?.user?._id,
+      req?.query?.guest_id,
     );
     if (!result.success) {
       return errorHandler(res, result.message);

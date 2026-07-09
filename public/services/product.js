@@ -128,7 +128,7 @@ export const getProducts = async ({
   search,
   category_slug,
   subcategory_slug,
-  user_id = null
+  user_id = null,
 }) => {
   const filter = { is_deleted: 0 };
 
@@ -194,13 +194,9 @@ export const getProducts = async ({
 
   if (user_id) {
     const wishlist = await Wishlist.findOne({ user_id });
-    wishlistProductIds =
-      new Set(
-        wishlist.products.map(
-          (item) =>
-            item.product_id.toString()
-        )
-      );
+    wishlistProductIds = new Set(
+      wishlist.products.map((item) => item.product_id.toString()),
+    );
   }
   const pricingSettings = await Globals.findOne();
 
@@ -215,9 +211,7 @@ export const getProducts = async ({
       ...product.toObject(),
       display_price: displayPrice,
       is_wishlist: user_id
-        ? wishlistProductIds.has(
-          product._id.toString()
-        )
+        ? wishlistProductIds.has(product._id.toString())
         : false,
     };
   });
@@ -255,20 +249,21 @@ export const getProducts = async ({
 };
 
 /* Get single product by id */
-export const getSingleProduct = async (id, userId = null) => {
+export const getSingleProduct = async (id, userId = null, guestId = null) => {
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
-      _id: id,
-      is_deleted: 0,
-    }
+        _id: id,
+        is_deleted: 0,
+      }
     : {
-      slug: id,
-      is_deleted: 0,
-    };
+        slug: id,
+        is_deleted: 0,
+      };
 
-  const product = await Product.findOne(query).select("-updatedAt -__v")
+  const product = await Product.findOne(query)
+    .select("-updatedAt -__v")
     .populate("category_id")
-    .populate("subcategory_id")
+    .populate("subcategory_id");
 
   if (!product) {
     return {
@@ -349,12 +344,10 @@ export const getSingleProduct = async (id, userId = null) => {
   let isWishlist = false;
 
   if (userId) {
-    const wishlist =
-      await Wishlist.findOne({
-        user_id: userId,
-        "products.product_id":
-          product._id,
-      });
+    const wishlist = await Wishlist.findOne({
+      user_id: userId,
+      "products.product_id": product._id,
+    });
 
     isWishlist = !!wishlist;
   }
