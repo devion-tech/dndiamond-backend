@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { productTypes } from "../helpers/constant.js";
+import { diamondTypes, productTypes } from "../helpers/constant.js";
 
 const OptionValueSchema = new mongoose.Schema(
   {
@@ -72,6 +72,21 @@ const ProductSchema = new mongoose.Schema(
       enum: productTypes,
       trim: true,
       lowercase: true,
+    },
+    diamond_type: {
+      type: String,
+      required: true,
+      enum: diamondTypes,
+      trim: true,
+      lowercase: true,
+    },
+    qty: {
+      type: Number,
+      default: 0,
+    },
+    isBestSell: {
+      type: Number,
+      default: 0,
     },
     price: {
       type: Number,
