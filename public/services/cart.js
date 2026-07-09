@@ -139,6 +139,7 @@ export const getCart = async (userId, guestId) => {
           _id: product._id,
           name: product.name,
           slug: product.slug,
+          weight: product.weight,
           image: product.image,
         },
       };
