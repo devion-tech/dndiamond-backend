@@ -54,7 +54,7 @@ export const loginUser = async (email, password) => {
     }
     const isMatch = await verifyData(password, user.password);
     if (!isMatch) {
-      return { success: false, message: "Invalid password" };
+      return { success: false, message: "Invalid login credentials!" };
     }
     const token = await authToken({
       _id: user._id,

@@ -126,7 +126,8 @@ export const getCart = async (userId, guestId) => {
       }
 
       const total = currentPrice * item.quantity;
-      subtotal += total;
+      const snapshotTotal = item.price_snapshot * item.quantity;
+      subtotal += snapshotTotal;
       return {
         item_id: item._id,
         quantity: item.quantity,
@@ -140,7 +141,7 @@ export const getCart = async (userId, guestId) => {
           name: product.name,
           slug: product.slug,
           weight: product.weight,
-          image: product.image,
+          images: product.images,
         },
       };
     }),
@@ -158,13 +159,13 @@ export const getCart = async (userId, guestId) => {
 export const updateCart = async (userId, guestId, itemId, quantity) => {
   const query = userId
     ? {
-        user_id: userId,
-        "items._id": itemId,
-      }
+      user_id: userId,
+      "items._id": itemId,
+    }
     : {
-        guest_id: guestId,
-        "items._id": itemId,
-      };
+      guest_id: guestId,
+      "items._id": itemId,
+    };
 
   const cart = await Cart.findOneAndUpdate(
     query,

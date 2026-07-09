@@ -32,13 +32,11 @@ export const createCategory = async (payload) => {
     };
   }
 
-  const slug = await generateSlug(name);
-
   const category = await Category.create({
     name,
     attribute_id,
     image,
-    slug,
+    slug: await generateSlug(name),
   });
 
   const createdSubcategories = [];
@@ -81,6 +79,7 @@ export const createCategory = async (payload) => {
     const created = await Subcategory.create({
       name: subcategory.name.trim(),
       parent_id: category._id,
+      slug: await generateSlug(subcategory.name.trim()),
     });
     createdSubcategories.push(created);
   }

@@ -51,7 +51,6 @@ export const calculateJewelleryVariantPrices = (
         const goldPrice = product.weight * goldRate;
 
         const makingCharge = product.weight * pricingSettings.making_charge;
-
         const finalPrice =
             goldPrice +
             makingCharge +
