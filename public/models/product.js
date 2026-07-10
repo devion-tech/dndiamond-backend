@@ -42,6 +42,11 @@ const DiamondSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    type: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     quantity: {
       type: Number,
       required: true,
@@ -99,7 +104,7 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true
+      trim: true,
     },
     weight: {
       type: Number,
@@ -112,13 +117,13 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    diamond_type: {
-      type: String,
-      required: true,
-      enum: diamondTypes,
-      trim: true,
-      lowercase: true,
-    },
+    // diamond_type: {
+    //   type: String,
+    //   required: true,
+    //   enum: diamondTypes,
+    //   trim: true,
+    //   lowercase: true,
+    // },
     qty: {
       type: Number,
       default: 0,
@@ -177,5 +182,6 @@ const ProductSchema = new mongoose.Schema(
   },
 );
 
-const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
+const Product =
+  mongoose.models.Product || mongoose.model("Product", ProductSchema);
 export default Product;

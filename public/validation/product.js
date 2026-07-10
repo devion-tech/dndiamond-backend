@@ -27,6 +27,11 @@ const diamondSchema = Joi.object({
   clarity: Joi.string().optional().allow("", null).trim(),
   color: Joi.string().optional().allow("", null).trim(),
   cut: Joi.string().optional().allow("", null).trim(),
+  type: Joi.string()
+    .required()
+    .valid("Natural", "Lab-Grown")
+    .allow("", null)
+    .trim(),
   quantity: Joi.number().required().messages({
     "any.required": "Diamond quantity is required",
     "number.base": "Diamond quantity must be a number",
@@ -72,20 +77,17 @@ export const createProductValidation = Joi.object({
       "any.required": "Product type is required",
       "any.only": "Invalid product type",
     }),
-  diamond_type: Joi.string()
-    .valid("labgrown", "natural")
-    .required()
-    .messages({
-      "any.required": "Diamond type is required",
-      "any.only": "Invalid diamond type",
-    }),
+  // diamond_type: Joi.string().valid("labgrown", "natural").required().messages({
+  //   "any.required": "Diamond type is required",
+  //   "any.only": "Invalid diamond type",
+  // }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().optional().messages({
     "number.base": "Price must be a number",
   }),
-  qty: Joi.number().required().messages({
-    "number.base": "Quantity must be a number",
-  }),
+  // qty: Joi.number().required().messages({
+  //   "number.base": "Quantity must be a number",
+  // }),
   pricing: Joi.object({
     diamond_cost: Joi.number().min(0).default(0),
     gemstone_cost: Joi.number().min(0).default(0),
@@ -145,14 +147,14 @@ export const editProductValidation = Joi.object({
   product_type: Joi.string().valid("jewellery", "diamond", "watch").messages({
     "any.only": "Invalid product type",
   }),
-  diamond_type: Joi.string()
-    .valid("labgrown", "natural")
-    .optional()
-    .disallow("")
-    .messages({
-      "any.required": "Diamond type is required",
-      "any.only": "Invalid diamond type",
-    }),
+  // diamond_type: Joi.string()
+  //   .valid("labgrown", "natural")
+  //   .optional()
+  //   .disallow("")
+  //   .messages({
+  //     "any.required": "Diamond type is required",
+  //     "any.only": "Invalid diamond type",
+  //   }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().messages({
     "number.base": "Price must be a number",
