@@ -15,7 +15,7 @@ import { generateSlug } from "../helpers/slug.js";
 import Cart from "../models/Cart.js";
 
 export const createProduct = async (payload) => {
-  const { name, category_id, subcategory_id, attribute_id } = payload;
+  const { name, category_id, subcategory_id, diamond_type, attribute_id } = payload;
 
   payload.slug = await generateSlug(name);
 
@@ -252,13 +252,13 @@ export const getProducts = async ({
 export const getSingleProduct = async (id, userId = null, guestId = null) => {
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
-        _id: id,
-        is_deleted: 0,
-      }
+      _id: id,
+      is_deleted: 0,
+    }
     : {
-        slug: id,
-        is_deleted: 0,
-      };
+      slug: id,
+      is_deleted: 0,
+    };
 
   const product = await Product.findOne(query)
     .select("-updatedAt -__v")

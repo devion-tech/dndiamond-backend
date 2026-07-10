@@ -32,7 +32,6 @@ export const loginAdmin = async (req, res) => {
       200,
     );
   } catch (error) {
-    console.log("error :>> ", error);
     errorHandler(res, "Internal server error", 500);
   }
 };

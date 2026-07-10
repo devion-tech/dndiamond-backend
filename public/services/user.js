@@ -7,7 +7,23 @@ export const createUser = async (data) => {
   const password = data.password;
   data.password = await encryptData(password);
   const user = new User(data);
-  return user.save();
+  await user.save();
+
+  const token = await authToken({
+    _id: user._id,
+    email: user.email,
+    role: ROLE.USER,
+  });
+
+  return {
+    token,
+    user:
+    {
+      _id: user._id,
+      name: user.name,
+      email: user.email
+    }
+  };
 };
 
 export const findUser = async (data) => {
@@ -54,7 +70,7 @@ export const loginUser = async (email, password) => {
     }
     const isMatch = await verifyData(password, user.password);
     if (!isMatch) {
-      return { success: false, message: "Invalid password" };
+      return { success: false, message: "Invalid login credentials!" };
     }
     const token = await authToken({
       _id: user._id,

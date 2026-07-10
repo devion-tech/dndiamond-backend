@@ -23,7 +23,7 @@ export const loginAdmin = async (email, password) => {
     }
     const isMatch = await verifyData(password, admin.password);
     if (!isMatch) {
-      return { success: false, message: "Invalid password" };
+      return { success: false, message: "Invalid login credentials" };
     }
     const token = await authToken({
       _id: admin._id,
