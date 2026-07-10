@@ -34,7 +34,7 @@ export const createAttribute = async (payload) => {
 };
 
 export const updateAttribute = async (payload) => {
-  const { id, attributes, type } = payload;
+  const { id, attributes, type, diamond } = payload;
 
   const existing = await Attribute.findById(id);
 
@@ -64,6 +64,10 @@ export const updateAttribute = async (payload) => {
 
   if (attributes !== undefined) {
     existing.attributes = attributes;
+  }
+  console.log("diamond", diamond);
+  if (diamond !== undefined) {
+    existing.diamond = diamond;
   }
 
   await existing.save();

@@ -32,6 +32,25 @@ export const createAttributeValidation = Joi.object({
       "any.required": "Attributes object is required",
       "object.base": "Attributes must be an object with key-value pairs",
     }),
+  diamond: Joi.object()
+    .pattern(
+      Joi.string(),
+      Joi.array()
+        .items(
+          Joi.object({
+            value: Joi.string().required().trim().messages({
+              "any.required": "Attribute value is required",
+              "string.empty": "Attribute value cannot be empty",
+            }),
+          }),
+        )
+        .required(),
+    )
+    .required()
+    .messages({
+      "any.required": "Attributes object is required",
+      "object.base": "Attributes must be an object with key-value pairs",
+    }),
 });
 
 export const updateAttributeValidation = Joi.object({
@@ -53,6 +72,25 @@ export const updateAttributeValidation = Joi.object({
         .required(),
     )
     .messages({
+      "object.base": "Attributes must be an object with key-value pairs",
+    }),
+  diamond: Joi.object()
+    .pattern(
+      Joi.string(),
+      Joi.array()
+        .items(
+          Joi.object({
+            value: Joi.string().required().trim().messages({
+              "any.required": "Attribute value is required",
+              "string.empty": "Attribute value cannot be empty",
+            }),
+          }),
+        )
+        .required(),
+    )
+    .required()
+    .messages({
+      "any.required": "Attributes object is required",
       "object.base": "Attributes must be an object with key-value pairs",
     }),
 });

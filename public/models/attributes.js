@@ -10,6 +10,16 @@ const AttributeOptionSchema = new mongoose.Schema(
   },
   { _id: false },
 );
+const diamondOptionSchema = new mongoose.Schema(
+  {
+    value: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  { _id: false },
+);
 
 const AttributeSchema = new mongoose.Schema(
   {
@@ -22,6 +32,11 @@ const AttributeSchema = new mongoose.Schema(
     attributes: {
       type: Map,
       of: [AttributeOptionSchema],
+      default: {},
+    },
+    diamond: {
+      type: Map,
+      of: [diamondOptionSchema],
       default: {},
     },
     is_deleted: {

@@ -20,6 +20,45 @@ const OptionValueSchema = new mongoose.Schema(
   { _id: false },
 );
 
+const DiamondSchema = new mongoose.Schema(
+  {
+    shape: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    clarity: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    color: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    cut: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    weight: {
+      type: Number,
+      required: true,
+    },
+    fancyColor: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+  },
+  { _id: false },
+);
+
 const OptionSchema = new mongoose.Schema(
   {
     name: {
@@ -93,6 +132,7 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
     options: [OptionSchema],
+    diamonds: [DiamondSchema],
 
     // Mainly for jewellery products
     pricing: {

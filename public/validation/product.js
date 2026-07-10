@@ -22,6 +22,22 @@ const optionValueSchema = Joi.object({
   }),
 });
 
+const diamondSchema = Joi.object({
+  shape: Joi.string().optional().allow("", null).trim(),
+  clarity: Joi.string().optional().allow("", null).trim(),
+  color: Joi.string().optional().allow("", null).trim(),
+  cut: Joi.string().optional().allow("", null).trim(),
+  quantity: Joi.number().required().messages({
+    "any.required": "Diamond quantity is required",
+    "number.base": "Diamond quantity must be a number",
+  }),
+  weight: Joi.number().required().messages({
+    "any.required": "Diamond weight is required",
+    "number.base": "Diamond weight must be a number",
+  }),
+  fancyColor: Joi.string().optional().allow("", null).trim(),
+});
+
 const optionSchema = Joi.object({
   name: Joi.string().required().trim().messages({
     "any.required": "Option name is required",
@@ -86,6 +102,9 @@ export const createProductValidation = Joi.object({
     "array.min": "At least one option is required",
     "array.base": "Options must be an array",
   }),
+  diamonds: Joi.array().items(diamondSchema).optional().messages({
+    "array.base": "Diamonds must be an array",
+  }),
 }).custom((value, helpers) => {
   if (value.product_type !== "jewellery") {
     return value;
@@ -142,6 +161,9 @@ export const editProductValidation = Joi.object({
     "number.base": "Option weight must be a number",
   }),
   options: Joi.array().items(optionSchema).optional(),
+  diamonds: Joi.array().items(diamondSchema).optional().messages({
+    "array.base": "Diamonds must be an array",
+  }),
 });
 
 export const getProductsValidation = Joi.object({
