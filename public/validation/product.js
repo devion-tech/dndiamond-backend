@@ -85,9 +85,9 @@ export const createProductValidation = Joi.object({
   price: Joi.number().optional().messages({
     "number.base": "Price must be a number",
   }),
-  // qty: Joi.number().required().messages({
-  //   "number.base": "Quantity must be a number",
-  // }),
+  qty: Joi.number().required().messages({
+    "number.base": "Quantity must be a number",
+  }),
   pricing: Joi.object({
     diamond_cost: Joi.number().min(0).default(0),
     gemstone_cost: Joi.number().min(0).default(0),
