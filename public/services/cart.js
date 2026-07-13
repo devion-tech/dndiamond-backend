@@ -135,7 +135,7 @@ export const getCart = async (userId, guestId) => {
         price_snapshot: item.price_snapshot,
         current_price: currentPrice,
         price_changed: currentPrice !== item.price_snapshot,
-        total,
+        total: snapshotTotal,
         product: {
           _id: product._id,
           name: product.name,
@@ -159,13 +159,13 @@ export const getCart = async (userId, guestId) => {
 export const updateCart = async (userId, guestId, itemId, quantity) => {
   const query = userId
     ? {
-      user_id: userId,
-      "items._id": itemId,
-    }
+        user_id: userId,
+        "items._id": itemId,
+      }
     : {
-      guest_id: guestId,
-      "items._id": itemId,
-    };
+        guest_id: guestId,
+        "items._id": itemId,
+      };
 
   const cart = await Cart.findOneAndUpdate(
     query,
