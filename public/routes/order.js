@@ -1,0 +1,15 @@
+import { Router } from "express";
+import { validateRequest, validateRequestForParams, validateRequestForQuery } from "../middelware/validation.js";
+import { createOrderValidation, getMyOrdersValidation, getOrdersValidation } from "../validation/order.js";
+import { verifyAdminToken, verifytoken } from "../utills/jwt.helper.js";
+import * as orderController from "../controllers/order.js";
+import { commonIdValidation } from "../validation/common.js";
+
+const router = new Router();
+
+router.post("/", verifytoken, validateRequest(createOrderValidation), orderController.createOrder); /* Create order by user */
+router.get("/", verifyAdminToken, validateRequestForQuery(getOrdersValidation), orderController.getOrders); /* Get all order of user for admin */
+router.get("/myOrders", verifytoken, validateRequestForQuery(getMyOrdersValidation), orderController.getMyOrders);
+router.get("/:id", verifyAdminToken, validateRequestForParams(commonIdValidation), orderController.getSingleOrder); /* Get order by id for user */
+
+export default router;

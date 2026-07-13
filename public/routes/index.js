@@ -9,6 +9,8 @@ import cartRouter from "./cart.js";
 import wishlistRouter from "./wishlist.js";
 import reviewRouter from "./review.js";
 import promoCodeRouter from "./promoCode.js";
+import addressRouter from "./address.js";
+import orderRouter from "./order.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -24,5 +26,7 @@ router.use("/cart", cartRouter);
 router.use("/wishlist", wishlistRouter);
 router.use("/review", reviewRouter);
 router.use("/promoCodes", promoCodeRouter);
+router.use("/address", addressRouter);
+router.use("/order", orderRouter);
 
 export default router;

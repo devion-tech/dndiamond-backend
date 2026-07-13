@@ -7,12 +7,7 @@ export const success = (res, data = {}, message = "Success", status = 200) => {
   });
 };
 
-export const errorHandler = (
-  res,
-  message = "Something went wrong",
-  status = 400,
-  data = {},
-) => {
+export const errorHandler = (res, message = "Something went wrong", status = 400, data = {}) => {
   return res.status(status).json({
     status,
     success: false,
