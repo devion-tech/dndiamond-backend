@@ -19,6 +19,7 @@ export const getOrdersValidation = Joi.object({
   search: Joi.string().allow("").optional(),
 });
 
+/* Get My Orders Validation */
 export const getMyOrdersValidation = Joi.object({
   page: Joi.number().default(1),
   limit: Joi.number().default(10),
@@ -32,4 +33,19 @@ export const getMyOrdersValidation = Joi.object({
     .optional()
     .allow("")
     .messages({ "date.min": "end_date must be greater than or equal to start_date" }),
+});
+
+/* Update Order Status Validation */
+export const updateOrderStatusValidation = Joi.object({
+  order_status: Joi.string()
+    .valid(
+      "pending",
+      "confirmed",
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+      "returned"
+    )
+    .required(),
 });

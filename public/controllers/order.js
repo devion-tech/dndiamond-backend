@@ -107,3 +107,18 @@ export const getSingleOrder = async (req, res, next) => {
         next(error);
     }
 };
+
+/* Update order status by admin */
+export const updateOrderStatus = async (req, res, next) => {
+    try {
+        const result = await orderService.updateOrderStatus(req.params.id, req.body.order_status);
+
+        if (!result.success) {
+            return errorHandler(res, result.message);
+        }
+
+        return success(res, {}, result.message);
+    } catch (error) {
+        next(error);
+    }
+};

@@ -24,12 +24,12 @@ const LandingSchema = new mongoose.Schema(
         },
         title: {
             type: String,
-            required: true,
+            required: false,
             default: "",
         },
         description: {
             type: String,
-            required: true,
+            required: false,
             default: "",
         },
     },

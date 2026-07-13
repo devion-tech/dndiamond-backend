@@ -248,6 +248,7 @@ export const getMyOrders = async ({
     };
 };
 
+/* Get single order by admin */
 export const getSingleOrder = async (orderId) => {
 
     const filter = { _id: orderId, is_deleted: 0 };
@@ -266,6 +267,29 @@ export const getSingleOrder = async (orderId) => {
 
     return {
         success: true,
+        data: order,
+    };
+};
+
+/* Update order status by admin */
+export const updateOrderStatus = async (orderId, orderStatus) => {
+
+    const order = await Order.findOne({ _id: orderId, is_deleted: 0 });
+
+    if (!order) {
+        return {
+            success: false,
+            message: "Order not found",
+        };
+    }
+
+    order.order_status = orderStatus;
+
+    await order.save();
+
+    return {
+        success: true,
+        message: "Order status updated successfully",
         data: order,
     };
 };

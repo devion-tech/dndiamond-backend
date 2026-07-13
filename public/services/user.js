@@ -1,5 +1,8 @@
 import { encryptData, verifyData } from "../common/randomPassword.js";
-import { ROLE } from "../helpers/constant.js";
+import { JEWELLERY, ROLE } from "../helpers/constant.js";
+import Globals from "../models/globals.js";
+import Landing from "../models/landing.js";
+import Product from "../models/product.js";
 import User from "../models/user.js";
 import { authToken } from "../utills/jwt.helper.js";
 
@@ -98,4 +101,33 @@ export const updateUser = async (id, data) => {
   }
   const user = await User.findByIdAndUpdate(id, data, { new: true });
   return user;
+};
+
+/* get main page data */
+export const getMainPageData = async () => {
+  const heroImage = await Landing.find();
+
+  const bestSellingProduct = await Product.find({ isBestSell: 1, is_deleted: 0 });
+
+  const pricingSettings = await Globals.findOne();
+
+  const bestSellingProductsWithPrice =
+    bestSellingProduct.map((product) => {
+
+      let displayPrice = product.price;
+
+      if (product.product_type === JEWELLERY) {
+        displayPrice = calculateJewelleryPrice(product, pricingSettings);
+      }
+
+      return {
+        ...product.toObject(),
+        display_price: displayPrice,
+      };
+    });
+
+  return {
+    image: heroImage,
+    best_selling_products: bestSellingProductsWithPrice,
+  };
 };

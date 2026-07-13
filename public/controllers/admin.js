@@ -1,6 +1,7 @@
 import { errorHandler, success } from "../helpers/response.js";
 import * as adminService from "../services/admin.js"; // Import your service function
 
+/* Create admin */
 export const createAdmin = async (req, res) => {
   try {
     const userData = req.body;
@@ -16,6 +17,7 @@ export const createAdmin = async (req, res) => {
   }
 };
 
+/* Login admin */
 export const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -33,5 +35,20 @@ export const loginAdmin = async (req, res) => {
     );
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
+  }
+};
+
+/* Get admin dashboard */
+export const getDashboard = async (req, res, next) => {
+  try {
+    const result = await adminService.getDashboard();
+
+    if (!result.success) {
+      return errorHandler(res, result.message);
+    }
+
+    return success(res, result.data, result.messag);
+  } catch (error) {
+    next(error);
   }
 };

@@ -39,7 +39,7 @@ export const createLanding = async (req, res, next) => {
       return errorHandler(res, result.message);
     }
 
-    return success(res, result.data, "Hero section Image added successfully");
+    return success(res, {}, "Hero section Image added successfully");
   } catch (error) {
     next(error);
   }

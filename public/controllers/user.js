@@ -14,6 +14,7 @@ export const createUser = async (req, res) => {
     success(res, newUser, "User Registered successful", 200);
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
+    return;
   }
 };
 
@@ -34,6 +35,7 @@ export const loginUser = async (req, res) => {
     );
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
+    return;
   }
 };
 
@@ -57,6 +59,7 @@ export const getUsers = async (req, res) => {
     );
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
+    return;
   }
 };
 
@@ -71,7 +74,20 @@ export const updateUser = async (req, res) => {
       return;
     }
     success(res, updated, "User updated successfully", 200);
+    return;
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
+  }
+};
+
+/* Get main page data */
+export const getMainPageData = async (req, res) => {
+  try {
+    const result = await userService.getMainPageData();
+    success(res, result, "User updated successfully", 200);
+    return;
+  } catch (error) {
+    errorHandler(res, "Internal server error", 500);
+    return;
   }
 };

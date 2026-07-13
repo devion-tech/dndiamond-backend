@@ -9,25 +9,11 @@ import * as userController from "../controllers/user.js";
 
 const router = new Router();
 
-router.post(
-  "/",
-  validateRequest(createUserValidation),
-  userController.createUser,
-);
-
-router.post(
-  "/login",
-  validateRequest(loginUserValidation),
-  userController.loginUser,
-);
-
+router.post("/", validateRequest(createUserValidation), userController.createUser);
+router.post("/login", validateRequest(loginUserValidation), userController.loginUser);
 router.get("/", verifyAdminToken, userController.getUsers);
+router.put("/:id", verifyAdminToken, validateRequest(loginUserValidation), userController.updateUser);
 
-router.put(
-  "/:id",
-  verifyAdminToken,
-  validateRequest(loginUserValidation),
-  userController.updateUser,
-);
+router.get("/mainPage", userController.getMainPageData);
 
 export default router;

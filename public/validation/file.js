@@ -16,6 +16,6 @@ export const fileDeleteValidation = Joi.object({
 
 /* Add landing page hero image validation*/
 export const createLandingValidation = Joi.object({
-    title: Joi.string().trim().optional(),
-    description: Joi.string().trim().optional(),
+    title: Joi.string().trim().optional().allow(""),
+    description: Joi.string().trim().optional().allow(""),
 });
