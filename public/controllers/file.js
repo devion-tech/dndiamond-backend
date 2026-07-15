@@ -26,21 +26,3 @@ export const deleteImage = async (req, res, next) => {
     next(error);
   }
 };
-
-/* Create landing page hero image */
-export const createLanding = async (req, res, next) => {
-  try {
-    const result = await fileService.createLanding({
-      ...req.body,
-      file: req.file,
-    });
-
-    if (!result.success) {
-      return errorHandler(res, result.message);
-    }
-
-    return success(res, result.data, "Hero section Image added successfully");
-  } catch (error) {
-    next(error);
-  }
-};
