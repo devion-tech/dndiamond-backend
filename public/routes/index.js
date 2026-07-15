@@ -11,6 +11,7 @@ import reviewRouter from "./review.js";
 import promoCodeRouter from "./promoCode.js";
 import addressRouter from "./address.js";
 import orderRouter from "./order.js";
+import paymentRouter from "./payment.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -28,5 +29,6 @@ router.use("/review", reviewRouter);
 router.use("/promoCodes", promoCodeRouter);
 router.use("/address", addressRouter);
 router.use("/order", orderRouter);
+router.use("/payment", paymentRouter);
 
 export default router;

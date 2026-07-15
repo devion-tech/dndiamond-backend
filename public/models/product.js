@@ -96,7 +96,6 @@ const ProductSchema = new mongoose.Schema(
     slug: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },
@@ -117,13 +116,6 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    // diamond_type: {
-    //   type: String,
-    //   required: true,
-    //   enum: diamondTypes,
-    //   trim: true,
-    //   lowercase: true,
-    // },
     qty: {
       type: Number,
       default: 0,

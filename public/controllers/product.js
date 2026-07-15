@@ -37,6 +37,7 @@ export const getAllProduct = async (req, res, next) => {
       limit: pageLimit,
       skip,
       product_type: body.product_type,
+      diamond_type: body.diamond_type,
       filters: body.filters,
       sort_by: body.sort_by,
       search: body.search,
