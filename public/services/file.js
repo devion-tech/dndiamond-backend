@@ -28,24 +28,22 @@ export const deleteFile = async (ids) => {
 };
 
 /* Create landing page hero image */
-export const createLanding = async ({ title, description, files }) => {
-  const images = [];
+export const createLanding = async ({ title, description, file }) => {
+  const image = null;
 
-  if (files && files.length) {
-    for (const file of files) {
-      const uploaded = await uploadToCloudinary(file, "landing");
+  if (file) {
+    const uploaded = await uploadToCloudinary(file, "landing");
 
-      images.push({
-        image: uploaded.url,
-        public_id: uploaded.publicId,
-      });
-    }
+    image = {
+      image: uploaded.url,
+      public_id: uploaded.publicId,
+    };
   }
 
   const landing = await Landing.create({
     title,
     description,
-    image: images,
+    image: image,
   });
 
   return {

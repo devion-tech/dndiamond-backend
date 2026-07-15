@@ -32,7 +32,7 @@ export const createLanding = async (req, res, next) => {
   try {
     const result = await fileService.createLanding({
       ...req.body,
-      files: req.files,
+      file: req.file,
     });
 
     if (!result.success) {

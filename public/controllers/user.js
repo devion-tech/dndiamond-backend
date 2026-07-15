@@ -84,7 +84,7 @@ export const updateUser = async (req, res) => {
 export const getMainPageData = async (req, res) => {
   try {
     const result = await userService.getMainPageData();
-    success(res, result, "User updated successfully", 200);
+    success(res, result, "Main page data retrieved successfully", 200);
     return;
   } catch (error) {
     errorHandler(res, "Internal server error", 500);
