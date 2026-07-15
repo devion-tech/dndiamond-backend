@@ -194,9 +194,11 @@ export const getProducts = async ({
 
   if (user_id) {
     const wishlist = await Wishlist.findOne({ user_id });
-    wishlistProductIds = new Set(
-      wishlist.products.map((item) => item.product_id.toString()),
-    );
+    if (wishlist) {
+      wishlistProductIds = new Set(
+        wishlist.products.map((item) => item.product_id.toString()),
+      );
+    }
   }
   const pricingSettings = await Globals.findOne();
 
