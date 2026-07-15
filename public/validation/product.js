@@ -1,6 +1,6 @@
 import Joi from "joi";
 import mongoose from "mongoose";
-import { productTypes } from "../helpers/constant.js";
+import { diamondTypes, productTypes } from "../helpers/constant.js";
 
 const objectId = Joi.string().custom((value, helpers) => {
   if (!mongoose.Types.ObjectId.isValid(value)) {
@@ -29,7 +29,7 @@ const diamondSchema = Joi.object({
   cut: Joi.string().optional().allow("", null).trim(),
   type: Joi.string()
     .required()
-    .valid("Natural", "Lab-Grown")
+    .valid("labgrown", "natural")
     .allow("", null)
     .trim(),
   quantity: Joi.number().required().messages({
@@ -77,10 +77,6 @@ export const createProductValidation = Joi.object({
       "any.required": "Product type is required",
       "any.only": "Invalid product type",
     }),
-  // diamond_type: Joi.string().valid("labgrown", "natural").required().messages({
-  //   "any.required": "Diamond type is required",
-  //   "any.only": "Invalid diamond type",
-  // }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().optional().messages({
     "number.base": "Price must be a number",
@@ -196,6 +192,10 @@ export const getProductsValidation = Joi.object({
   product_type: Joi.string()
     .valid(...productTypes)
     .optional(),
+  diamond_type: Joi.string()
+    .valid(...diamondTypes)
+    .optional(),
+
   sort_by: Joi.string()
     .valid(
       "latest",

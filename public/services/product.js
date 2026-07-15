@@ -15,9 +15,27 @@ import { generateSlug } from "../helpers/slug.js";
 import Cart from "../models/Cart.js";
 
 export const createProduct = async (payload) => {
-  const { name, category_id, subcategory_id, diamond_type, attribute_id } = payload;
+  const { name, category_id, sku, subcategory_id, diamond_type, attribute_id } = payload;
 
   payload.slug = await generateSlug(name);
+
+  const existingProduct = await Product.findOne({
+    is_deleted: 0,
+    $or: [
+      { name: name },
+      { sku: sku }
+    ]
+  });
+
+  if (existingProduct) {
+    return {
+      success: false,
+      message:
+        existingProduct.name === name
+          ? "Product name already exists!"
+          : "SKU already exists!",
+    };
+  }
 
   const category = await Category.findOne({ _id: category_id, is_deleted: 0 });
   if (!category) {
@@ -123,6 +141,7 @@ export const getProducts = async ({
   limit,
   skip,
   product_type,
+  diamond_type,
   filters,
   sort_by,
   search,
@@ -157,6 +176,10 @@ export const getProducts = async ({
 
   if (product_type) {
     filter.product_type = product_type;
+  }
+
+  if (diamond_type) {
+    filter["diamonds.type"] = diamond_type;
   }
 
   const optionFilters = [];
@@ -274,6 +297,14 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
     };
   }
 
+  const relatedProducts = await Product.find({
+    _id: { $ne: product._id },
+    subcategory_id: product.subcategory_id._id,
+    is_deleted: 0,
+  })
+    .select("-updatedAt -__v -pricing")
+    .limit(5);
+
   const pricingSettings = await Globals.findOne();
   let goldPrices = [];
 
@@ -354,6 +385,22 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
     isWishlist = !!wishlist;
   }
 
+  const relatedProductsWithPrice = relatedProducts.map((item) => {
+    let displayPrice = item.price;
+
+    if (item.product_type === JEWELLERY) {
+      displayPrice = calculateJewelleryPrice(
+        item,
+        pricingSettings
+      );
+    }
+
+    return {
+      ...item.toObject(),
+      display_price: displayPrice,
+    };
+  });
+
   return {
     ...product.toObject(),
     options: updatedOptions,
@@ -361,6 +408,7 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
       average_rating: Number(averageRating.toFixed(1)),
       total_reviews: totalReviews,
     },
+    related_products: relatedProductsWithPrice,
     my_review: myReview,
     reviews,
     is_in_cart: !!isInCart,
