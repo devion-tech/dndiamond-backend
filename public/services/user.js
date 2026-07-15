@@ -5,6 +5,7 @@ import Landing from "../models/landing.js";
 import Product from "../models/product.js";
 import User from "../models/user.js";
 import { authToken } from "../utills/jwt.helper.js";
+import { calculateJewelleryPrice } from "../utills/productPrice.helper.js";
 
 export const createUser = async (data) => {
   const password = data.password;
@@ -20,12 +21,11 @@ export const createUser = async (data) => {
 
   return {
     token,
-    user:
-    {
+    user: {
       _id: user._id,
       name: user.name,
-      email: user.email
-    }
+      email: user.email,
+    },
   };
 };
 
@@ -107,24 +107,25 @@ export const updateUser = async (id, data) => {
 export const getMainPageData = async () => {
   const heroImage = await Landing.find();
 
-  const bestSellingProduct = await Product.find({ isBestSell: 1, is_deleted: 0 });
+  const bestSellingProduct = await Product.find({
+    isBestSell: 1,
+    is_deleted: 0,
+  });
 
   const pricingSettings = await Globals.findOne();
 
-  const bestSellingProductsWithPrice =
-    bestSellingProduct.map((product) => {
+  const bestSellingProductsWithPrice = bestSellingProduct.map((product) => {
+    let displayPrice = product.price;
 
-      let displayPrice = product.price;
+    if (product.product_type === JEWELLERY) {
+      displayPrice = calculateJewelleryPrice(product, pricingSettings);
+    }
 
-      if (product.product_type === JEWELLERY) {
-        displayPrice = calculateJewelleryPrice(product, pricingSettings);
-      }
-
-      return {
-        ...product.toObject(),
-        display_price: displayPrice,
-      };
-    });
+    return {
+      ...product.toObject(),
+      display_price: displayPrice,
+    };
+  });
 
   return {
     image: heroImage,

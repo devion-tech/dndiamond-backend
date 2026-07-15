@@ -105,6 +105,12 @@ export const createProductValidation = Joi.object({
     "any.required": "SKU is required",
     "string.empty": "SKU cannot be empty",
   }),
+  isBestSell: Joi.number()
+    .optional()
+    .messages({
+      "number.base": "Best seller flag must be a number",
+    })
+    .valid(0, 1),
   options: Joi.array().items(optionSchema).min(1).required().messages({
     "any.required": "Options are required",
     "array.min": "At least one option is required",
@@ -179,6 +185,12 @@ export const editProductValidation = Joi.object({
   weight: Joi.number().messages({
     "number.base": "Option weight must be a number",
   }),
+  isBestSell: Joi.number()
+    .optional()
+    .messages({
+      "number.base": "Best seller flag must be a number",
+    })
+    .valid(0, 1),
   options: Joi.array().items(optionSchema).optional(),
   diamonds: Joi.array().items(diamondSchema).optional().messages({
     "array.base": "Diamonds must be an array",
