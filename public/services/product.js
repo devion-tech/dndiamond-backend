@@ -301,7 +301,7 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
     is_deleted: 0,
   })
     .select("-updatedAt -__v -pricing")
-    .limit(5);
+    .limit(4);
 
   const pricingSettings = await Globals.findOne();
   let goldPrices = [];

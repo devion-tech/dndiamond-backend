@@ -31,7 +31,7 @@ export const verifytoken = async (req, res, next) => {
     process.env.SECRET_KEY,
     async (err, user) => {
       if (err) {
-        return res.status(200).json({
+        return res.status(401).json({
           status: 401,
           success: false,
           message: "User is unAuthorized!",
@@ -73,7 +73,7 @@ export const optionalAuth = async (req, res, next) => {
           req.user = getUser._id;
         }
         next();
-      }
+      },
     );
   } catch (error) {
     next();
