@@ -84,7 +84,7 @@ export const clearCart = async (req, res, next) => {
 /* Merge cart after login */
 export const mergeCart = async (req, res, next) => {
     try {
-        const result = await cartService.mergeCart(req.user._id, req.body.guest_id);
+        const result = await cartService.mergeCart(req.user, req.body.guest_id);
 
         if (!result.success) {
             return errorHandler(res, result.message);

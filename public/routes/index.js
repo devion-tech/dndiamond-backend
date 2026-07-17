@@ -13,6 +13,7 @@ import addressRouter from "./address.js";
 import orderRouter from "./order.js";
 import landingRouter from "./landing.js";
 import paymentRouter from "./payment.js";
+import inquiryRouter from "./diamondInquiry.js";
 import { Router } from "express";
 
 const router = new Router();
@@ -32,5 +33,6 @@ router.use("/address", addressRouter);
 router.use("/order", orderRouter);
 router.use("/landing", landingRouter);
 router.use("/payment", paymentRouter);
+router.use("/inquiry", inquiryRouter);
 
 export default router;

@@ -32,6 +32,13 @@ const GlobalsSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    currency_rates: {
+      type: Map,
+      of: Number,
+      default: {
+        HKD: 1
+      }
+    }
   },
   {
     timestamps: true,

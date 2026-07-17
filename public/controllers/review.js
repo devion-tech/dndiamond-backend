@@ -5,7 +5,7 @@ import * as reviewService from "../services/review.js";
 export const addReview = async (req, res, next) => {
     try {
         const result = await reviewService.addReview({
-            user_id: req.user._id,
+            user_id: req.user,
             product_id: req.body.product_id,
             rating: req.body.rating,
             review: req.body.review,
@@ -24,7 +24,7 @@ export const addReview = async (req, res, next) => {
 /* Delete review */
 export const deleteReview = async (req, res, next) => {
     try {
-        const result = await reviewService.deleteReview(req.params.id, req.user._id);
+        const result = await reviewService.deleteReview(req.params.id, req.user);
 
         if (!result.success) {
             return errorHandler(res, result?.message, 404);

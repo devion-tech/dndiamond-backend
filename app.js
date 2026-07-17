@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import index from './public/routes/index.js';
 import bodyParser from 'body-parser';
 import { createServer } from "http";
+import { startCurrencyRateCron, updateCurrencyRates } from './public/jobs/currencyRateCron.js';
 
 
 dotenv.config()
@@ -21,6 +22,10 @@ app.use(express.json())
 app.use("/api", index);
 
 app.get("/", (req, res) => res.send("Ok"))
+
+await updateCurrencyRates();
+
+startCurrencyRateCron();
 
 // http://localhost:8080/travelDateImage/image-1704030342110.jpg
 app.use("/travelDateImage", express.static("image"))

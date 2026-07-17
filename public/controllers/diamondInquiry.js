@@ -1,43 +1,37 @@
 import { errorHandler, getPagination, success } from "../helpers/response.js";
-import * as orderService from "../services/order.js";
+import * as diamondInquiryService from "../services/diamondInquiry.js";
 
-/* Create order when checkout */
-export const createOrder = async (req, res, next) => {
+/* Send diamond inquiry to admin */
+export const createDiamondInquiry = async (req, res, next) => {
     try {
-        const result = await orderService.createOrder(req.user, req.body);
+        const result = await diamondInquiryService.createDiamondInquiry(req.body, req.user || null);
 
         if (!result.success) {
             return errorHandler(res, result.message);
         }
 
-        return success(res, result.data, "Order created successfully");
+        return success(res, result.data, result.message);
     } catch (error) {
         next(error);
     }
 };
 
-/* Get orders */
-export const getOrders = async (req, res, next) => {
+/* Get diamond inquiry for admin */
+export const getDiamondInquiries = async (req, res, next) => {
     try {
         const query = req.query;
         const { pageNumber, pageLimit, skip } = await getPagination(query);
-        const result = await orderService.getOrders({
+        const result = await diamondInquiryService.getDiamondInquiries({
             page: pageNumber,
             limit: pageLimit,
             skip,
-            order_status: query.order_status,
-            payment_status: query.payment_status,
+            status: query.status,
             search: query.search,
         });
-
-        if (!result.success) {
-            return errorHandler(res, result.message);
-        }
-
         return success(
             res,
             {
-                orders: result.orders,
+                Inquiries: result.inquiries,
                 pagination: {
                     total: result.total,
                     page: pageNumber,
@@ -45,7 +39,38 @@ export const getOrders = async (req, res, next) => {
                     total_pages: Math.ceil(result.total / pageLimit),
                 },
             },
-            "Orders fetched successfully"
+            "Diamond inquiries fetched successfully."
+        );
+    } catch (error) {
+        next(error);
+    }
+};
+
+/* Get my inquiry */
+export const getMyInquiries = async (req, res, next) => {
+    try {
+        const query = req.query;
+        const { pageNumber, pageLimit, skip } = await getPagination(query);
+
+        const result = await diamondInquiryService.getMyInquiries({
+            userId: req.user,
+            page: pageNumber,
+            limit: pageLimit,
+            skip
+        });
+
+        return success(
+            res,
+            {
+                myInquiry: result.myInquiry,
+                pagination: {
+                    total: result.total,
+                    page: pageNumber,
+                    limit: pageLimit,
+                    total_pages: Math.ceil(result.total / pageLimit),
+                },
+            },
+            "My inquiries fetched successfully."
         );
 
     } catch (error) {
@@ -53,65 +78,25 @@ export const getOrders = async (req, res, next) => {
     }
 };
 
-/* Get user own order  */
-export const getMyOrders = async (req, res, next) => {
+/* Update diamond inquiry by admin */
+export const updateDiamondInquiry = async (req, res, next) => {
     try {
-        const query = req.query;
-        const { pageNumber, pageLimit, skip } = await getPagination(query);
-
-        const result = await orderService.getMyOrders({
-            user_id: req.user,
-            page: pageNumber,
-            limit: pageLimit,
-            skip,
-            order_status: query.order_status,
-            payment_status: query.payment_status,
-            search: query.search,
-            start_date: query.start_date,
-            end_date: query.end_date,
-        });
+        const result = await diamondInquiryService.updateDiamondInquiry(req.params.id, req.body);
 
         if (!result.success) {
             return errorHandler(res, result.message);
         }
 
-        return success(
-            res,
-            {
-                orders: result.orders,
-                pagination: {
-                    total: result.total,
-                    page: pageNumber,
-                    limit: pageLimit,
-                    total_pages: Math.ceil(result.total / pageLimit),
-                },
-            },
-            "Orders fetched successfully");
+        return success(res, {}, result.message);
     } catch (error) {
         next(error);
     }
 };
 
-/* Get single order */
-export const getSingleOrder = async (req, res, next) => {
+/* Delete diamond inquiry by admin */
+export const deleteDiamondInquiry = async (req, res, next) => {
     try {
-        const result = await orderService.getSingleOrder(req.params.id);
-
-        if (!result.success) {
-            return errorHandler(res, result.message);
-        }
-
-        return success(res, result.data, result.message);
-
-    } catch (error) {
-        next(error);
-    }
-};
-
-/* Update order status by admin */
-export const updateOrderStatus = async (req, res, next) => {
-    try {
-        const result = await orderService.updateOrderStatus(req.params.id, req.body.order_status);
+        const result = await diamondInquiryService.deleteDiamondInquiry(req.params.id);
 
         if (!result.success) {
             return errorHandler(res, result.message);
