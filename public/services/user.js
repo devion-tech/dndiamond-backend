@@ -104,7 +104,7 @@ export const updateUser = async (id, data) => {
 };
 
 /* get main page data */
-export const getMainPageData = async () => {
+export const getMainPageData = async (currency) => {
   const heroImage = await Landing.find();
 
   const bestSellingProduct = await Product.find({
@@ -118,7 +118,7 @@ export const getMainPageData = async () => {
     let displayPrice = product.price;
 
     if (product.product_type === JEWELLERY) {
-      displayPrice = calculateJewelleryPrice(product, pricingSettings);
+      displayPrice = calculateJewelleryPrice(product, pricingSettings, currency);
     }
 
     return {

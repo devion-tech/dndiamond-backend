@@ -26,8 +26,8 @@ export const addWishlist = async (req, res, next) => {
 export const getWishlist = async (req, res, next) => {
     try {
         const { pageNumber, pageLimit, skip } = await getPagination(req.query);
-
-        const result = await wishlistService.getWishlist({ userId: req.user, page: pageNumber, limit: pageLimit });
+        const currency = req.headers["x-currency"] || "HKD";
+        const result = await wishlistService.getWishlist({ userId: req.user, page: pageNumber, limit: pageLimit, currency });
         return success(
             res,
             {

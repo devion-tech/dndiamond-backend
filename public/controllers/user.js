@@ -83,7 +83,8 @@ export const updateUser = async (req, res) => {
 /* Get main page data */
 export const getMainPageData = async (req, res) => {
   try {
-    const result = await userService.getMainPageData();
+    const currency = req.headers["x-currency"] || "HKD";
+    const result = await userService.getMainPageData(currency);
     success(res, result, "Main page data retrieved successfully", 200);
     return;
   } catch (error) {

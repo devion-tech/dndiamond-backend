@@ -1,12 +1,15 @@
 // helpers/productPrice.helper.js
 export const calculateJewelleryPrice = (
     product,
-    pricingSettings
+    pricingSettings,
+    currency
 ) => {
 
     const goldOption = product.options.find(
         (item) => item.name.toLowerCase() === "gold_type"
     );
+
+    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
     if (!goldOption) {
         return 0;
@@ -17,16 +20,17 @@ export const calculateJewelleryPrice = (
         const goldRate = pricingSettings[gold.value] || 0;
         const goldPrice = product.weight * goldRate;
 
-        const makingCharge =
-            product.weight *
-            pricingSettings.making_charge;
+        const makingCharge = product.weight * pricingSettings.making_charge;
 
-        return (
+        const hkdPrice =
             goldPrice +
             makingCharge +
             (product.pricing?.diamond_cost || 0) +
             (product.pricing?.gemstone_cost || 0) +
-            (product.pricing?.additional_cost || 0)
+            (product.pricing?.additional_cost || 0);
+
+        return Number(
+            (hkdPrice * exchangeRate).toFixed(2)
         );
     });
 
@@ -37,7 +41,11 @@ export const calculateJewelleryPrice = (
 export const calculateJewelleryVariantPrices = (
     product,
     pricingSettings,
+    currency
 ) => {
+
+    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
+
     const goldOption = product.options.find(
         (item) => item.name.toLowerCase() === "gold_type",
     );
@@ -51,7 +59,7 @@ export const calculateJewelleryVariantPrices = (
         const goldPrice = product.weight * goldRate;
 
         const makingCharge = product.weight * pricingSettings.making_charge;
-        const finalPrice =
+        const hkdPrice =
             goldPrice +
             makingCharge +
             (product.pricing?.diamond_cost || 0) +
@@ -60,7 +68,8 @@ export const calculateJewelleryVariantPrices = (
 
         return {
             gold_type: gold.value,
-            price: finalPrice,
+            price: Number((hkdPrice * exchangeRate).toFixed(2)),
+            currency,
         };
     });
 };
@@ -69,18 +78,22 @@ export const calculateJewelleryVariantPrices = (
 export const calculateSelectedGoldPrice = (
     product,
     pricingSettings,
-    selectedGoldType
+    selectedGoldType,
+    currency
 ) => {
+
+    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
     const goldRate = pricingSettings[selectedGoldType] || 0;
     const goldPrice = product.weight * goldRate;
     const makingCharge = product.weight * pricingSettings.making_charge;
 
-    return (
+    const hkdPrice =
         goldPrice +
         makingCharge +
         (product.pricing?.diamond_cost || 0) +
         (product.pricing?.gemstone_cost || 0) +
-        (product.pricing?.additional_cost || 0)
-    );
+        (product.pricing?.additional_cost || 0);
+
+    return Number((hkdPrice * exchangeRate).toFixed(2));
 };

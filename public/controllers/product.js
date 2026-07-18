@@ -30,6 +30,7 @@ export const editProduct = async (req, res) => {
 /* Get product by all user */
 export const getAllProduct = async (req, res, next) => {
   try {
+    const currency = req.headers["x-currency"] || "HKD";
     const body = req.body;
     const { pageNumber, pageLimit, skip } = await getPagination(body);
     const result = await productService.getProducts({
@@ -44,6 +45,7 @@ export const getAllProduct = async (req, res, next) => {
       category_slug: body.category_slug,
       subcategory_slug: body.subcategory_slug,
       user_id: req?.user?._id,
+      currency
     });
 
     return success(
@@ -67,10 +69,12 @@ export const getAllProduct = async (req, res, next) => {
 /* Get single product by id */
 export const getSingleProduct = async (req, res, next) => {
   try {
+    const currency = req.headers["x-currency"] || "HKD";
     const result = await productService.getSingleProduct(
       req.params.identifier,
       req?.user?._id,
       req?.query?.guest_id,
+      currency
     );
     if (!result.success) {
       return errorHandler(res, result.message);

@@ -106,6 +106,11 @@ const OrderSchema = new mongoose.Schema(
             default: "stripe",
         },
 
+        currency: {
+            type: String,
+            default: "HKD",
+        },
+
         payment_method: {
             type: String,
             default: null,

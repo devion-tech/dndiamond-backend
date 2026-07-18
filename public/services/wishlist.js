@@ -57,7 +57,7 @@ export const toggleWishlist = async (userId, productId) => {
 };
 
 /* Get wishlist api service */
-export const getWishlist = async ({ userId, page, limit }) => {
+export const getWishlist = async ({ userId, page, limit, currency }) => {
 
     const wishlist = await Wishlist.findOne({ user_id: userId })
         .populate({
@@ -94,7 +94,7 @@ export const getWishlist = async ({ userId, page, limit }) => {
         .map((item) => {
             const product = item.product_id.toObject();
             if (product.product_type === JEWELLERY) {
-                product.display_price = calculateJewelleryPrice(product, pricingSettings);
+                product.display_price = calculateJewelleryPrice(product, pricingSettings, currency);
             } else {
                 product.display_price = product.price;
             }

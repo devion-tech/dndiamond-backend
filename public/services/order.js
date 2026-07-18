@@ -3,11 +3,11 @@ import Globals from "../models/globals.js";
 import Order from "../models/order.js";
 import Cart from "../models/cart.js";
 import PromoCode from "../models/promoCode.js";
-import { calculateJewelleryPrice, calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";
+import { calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";
 import { JEWELLERY, ROLE } from "../helpers/constant.js";
 
 /* Create Order */
-export const createOrder = async (userId, payload) => {
+export const createOrder = async (userId, payload, currency) => {
 
     const { address_id, promo_code = null, notes = "", } = payload;
 
@@ -58,7 +58,8 @@ export const createOrder = async (userId, payload) => {
             unitPrice = calculateSelectedGoldPrice(
                 product,
                 pricingSettings,
-                selectedGoldType
+                selectedGoldType,
+                currency
             );
         }
 

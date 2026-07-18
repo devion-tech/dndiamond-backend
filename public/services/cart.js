@@ -6,7 +6,7 @@ import Global from "../models/globals.js";
 import { calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";
 
 /* Add to cart services */
-export const addToCart = async (userId, payload) => {
+export const addToCart = async (userId, payload, currency) => {
   const { guest_id, product_id, quantity, selected_options } = payload;
 
   const product = await Product.findOne({
@@ -27,6 +27,7 @@ export const addToCart = async (userId, payload) => {
       product,
       pricingSettings,
       selected_options.gold_type,
+      currency
     );
   }
 
@@ -74,7 +75,7 @@ export const addToCart = async (userId, payload) => {
 };
 
 /* Get cart details */
-export const getCart = async (userId, guestId) => {
+export const getCart = async (userId, guestId, currency) => {
   if (!userId && !guestId) {
     return {
       items: [],
@@ -122,6 +123,7 @@ export const getCart = async (userId, guestId) => {
           product,
           pricingSettings,
           item.selected_options.gold_type,
+          currency
         );
       }
 
@@ -159,13 +161,13 @@ export const getCart = async (userId, guestId) => {
 export const updateCart = async (userId, guestId, itemId, quantity) => {
   const query = userId
     ? {
-        user_id: userId,
-        "items._id": itemId,
-      }
+      user_id: userId,
+      "items._id": itemId,
+    }
     : {
-        guest_id: guestId,
-        "items._id": itemId,
-      };
+      guest_id: guestId,
+      "items._id": itemId,
+    };
 
   const cart = await Cart.findOneAndUpdate(
     query,

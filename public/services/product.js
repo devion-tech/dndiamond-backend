@@ -146,6 +146,7 @@ export const getProducts = async ({
   category_slug,
   subcategory_slug,
   user_id = null,
+  currency
 }) => {
   const filter = { is_deleted: 0 };
 
@@ -227,7 +228,7 @@ export const getProducts = async ({
     let displayPrice = product.price;
 
     if (product.product_type === JEWELLERY) {
-      displayPrice = calculateJewelleryPrice(product, pricingSettings);
+      displayPrice = calculateJewelleryPrice(product, pricingSettings, currency);
     }
 
     return {
@@ -272,7 +273,7 @@ export const getProducts = async ({
 };
 
 /* Get single product by id */
-export const getSingleProduct = async (id, userId = null, guestId = null) => {
+export const getSingleProduct = async (id, userId = null, guestId = null, currency) => {
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
       _id: id,
@@ -307,7 +308,7 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
   let goldPrices = [];
 
   if (product.product_type === JEWELLERY) {
-    goldPrices = calculateJewelleryVariantPrices(product, pricingSettings);
+    goldPrices = calculateJewelleryVariantPrices(product, pricingSettings, currency);
   }
 
   const updatedOptions = product.options.map((option) => {
@@ -387,7 +388,7 @@ export const getSingleProduct = async (id, userId = null, guestId = null) => {
     let displayPrice = item.price;
 
     if (item.product_type === JEWELLERY) {
-      displayPrice = calculateJewelleryPrice(item, pricingSettings);
+      displayPrice = calculateJewelleryPrice(item, pricingSettings, currency);
     }
 
     return {

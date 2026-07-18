@@ -4,7 +4,8 @@ import * as orderService from "../services/order.js";
 /* Create order when checkout */
 export const createOrder = async (req, res, next) => {
     try {
-        const result = await orderService.createOrder(req.user, req.body);
+        const currency = req.headers["x-currency"] || "HKD";
+        const result = await orderService.createOrder(req.user, req.body, currency);
 
         if (!result.success) {
             return errorHandler(res, result.message);

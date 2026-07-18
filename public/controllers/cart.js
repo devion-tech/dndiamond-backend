@@ -4,11 +4,12 @@ import { errorHandler, success } from "../helpers/response.js";
 /* Add to cart with or without login */
 export const addToCart = async (req, res, next) => {
     try {
+        const currency = req.headers["x-currency"] || "HKD";
         if (!req.user && !req.body.guest_id) {
             return errorHandler(res, "Guest ID is required for guest users", 400);
         }
 
-        const result = await cartService.addToCart(req.user?._id || null, req.body);
+        const result = await cartService.addToCart(req.user?._id || null, req.body, currency);
 
         return success(res, {}, "Product added to cart successfully");
     } catch (error) {
@@ -21,7 +22,8 @@ export const getCart = async (req, res, next) => {
     try {
         const userId = req.user || null;
         const guestId = req.query.guest_id || null;
-        const result = await cartService.getCart(userId, guestId);
+        const currency = req.headers["x-currency"] || "HKD";
+        const result = await cartService.getCart(userId, guestId, currency);
         return success(res, result, "Cart fetched successfully");
     } catch (error) {
         next(error);
