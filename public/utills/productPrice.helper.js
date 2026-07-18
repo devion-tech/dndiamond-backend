@@ -1,99 +1,90 @@
 // helpers/productPrice.helper.js
-export const calculateJewelleryPrice = (
-    product,
-    pricingSettings,
-    currency
-) => {
+export const calculateJewelleryPrice = (product, pricingSettings, currency) => {
+  const goldOption = product.options.find(
+    (item) => item.name.toLowerCase() === "gold_type",
+  );
 
-    const goldOption = product.options.find(
-        (item) => item.name.toLowerCase() === "gold_type"
-    );
+  const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
+  //   console.log("exchangeRate :>> ", exchangeRate, pricingSettings);
 
-    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
+  if (!goldOption) {
+    return 0;
+  }
 
-    if (!goldOption) {
-        return 0;
-    }
+  const prices = goldOption.values.map((gold) => {
+    const goldRate = pricingSettings[gold.value] || 0;
+    const goldPrice = product.weight * goldRate;
 
-    const prices = goldOption.values.map((gold) => {
+    const makingCharge = product.weight * pricingSettings.making_charge;
 
-        const goldRate = pricingSettings[gold.value] || 0;
-        const goldPrice = product.weight * goldRate;
+    const hkdPrice =
+      goldPrice +
+      makingCharge +
+      (product.pricing?.diamond_cost || 0) +
+      (product.pricing?.gemstone_cost || 0) +
+      (product.pricing?.additional_cost || 0);
 
-        const makingCharge = product.weight * pricingSettings.making_charge;
+    return Number((hkdPrice * exchangeRate).toFixed(2));
+  });
 
-        const hkdPrice =
-            goldPrice +
-            makingCharge +
-            (product.pricing?.diamond_cost || 0) +
-            (product.pricing?.gemstone_cost || 0) +
-            (product.pricing?.additional_cost || 0);
-
-        return Number(
-            (hkdPrice * exchangeRate).toFixed(2)
-        );
-    });
-
-    return Math.min(...prices);
+  return Math.min(...prices);
 };
 
 /* Calculate Single Jewellery price */
 export const calculateJewelleryVariantPrices = (
-    product,
-    pricingSettings,
-    currency
+  product,
+  pricingSettings,
+  currency,
 ) => {
+  const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
-    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
+  const goldOption = product.options.find(
+    (item) => item.name.toLowerCase() === "gold_type",
+  );
 
-    const goldOption = product.options.find(
-        (item) => item.name.toLowerCase() === "gold_type",
-    );
+  if (!goldOption) {
+    return [];
+  }
 
-    if (!goldOption) {
-        return [];
-    }
+  return goldOption.values.map((gold) => {
+    const goldRate = pricingSettings[gold.value] || 0;
+    const goldPrice = product.weight * goldRate;
 
-    return goldOption.values.map((gold) => {
-        const goldRate = pricingSettings[gold.value] || 0;
-        const goldPrice = product.weight * goldRate;
+    const makingCharge = product.weight * pricingSettings.making_charge;
+    const hkdPrice =
+      goldPrice +
+      makingCharge +
+      (product.pricing?.diamond_cost || 0) +
+      (product.pricing?.gemstone_cost || 0) +
+      (product.pricing?.additional_cost || 0);
 
-        const makingCharge = product.weight * pricingSettings.making_charge;
-        const hkdPrice =
-            goldPrice +
-            makingCharge +
-            (product.pricing?.diamond_cost || 0) +
-            (product.pricing?.gemstone_cost || 0) +
-            (product.pricing?.additional_cost || 0);
-
-        return {
-            gold_type: gold.value,
-            price: Number((hkdPrice * exchangeRate).toFixed(2)),
-            currency,
-        };
-    });
+    return {
+      gold_type: gold.value,
+      price: Number((hkdPrice * exchangeRate).toFixed(2)),
+      currency,
+    };
+  });
 };
 
 /* Calculate selected gold price for add to cart */
 export const calculateSelectedGoldPrice = (
-    product,
-    pricingSettings,
-    selectedGoldType,
-    currency
+  product,
+  pricingSettings,
+  selectedGoldType,
+  currency,
 ) => {
+  const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
-    const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
+  const goldRate = pricingSettings[selectedGoldType] || 0;
+  const goldPrice = product.weight * goldRate;
+  const makingCharge = product.weight * pricingSettings.making_charge;
 
-    const goldRate = pricingSettings[selectedGoldType] || 0;
-    const goldPrice = product.weight * goldRate;
-    const makingCharge = product.weight * pricingSettings.making_charge;
+  const hkdPrice =
+    goldPrice +
+    makingCharge +
+    (product.pricing?.diamond_cost || 0) +
+    (product.pricing?.gemstone_cost || 0) +
+    (product.pricing?.additional_cost || 0);
 
-    const hkdPrice =
-        goldPrice +
-        makingCharge +
-        (product.pricing?.diamond_cost || 0) +
-        (product.pricing?.gemstone_cost || 0) +
-        (product.pricing?.additional_cost || 0);
-
-    return Number((hkdPrice * exchangeRate).toFixed(2));
+  return Number((hkdPrice * exchangeRate).toFixed(2));
 };

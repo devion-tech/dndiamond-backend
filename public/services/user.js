@@ -118,7 +118,11 @@ export const getMainPageData = async (currency) => {
     let displayPrice = product.price;
 
     if (product.product_type === JEWELLERY) {
-      displayPrice = calculateJewelleryPrice(product, pricingSettings, currency);
+      displayPrice = calculateJewelleryPrice(
+        product,
+        pricingSettings,
+        currency,
+      );
     }
 
     return {
