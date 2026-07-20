@@ -33,7 +33,7 @@ export const getWishlist = async (req, res, next) => {
             {
                 ...result,
                 page: pageNumber || 1,
-                limit: pageLimit || result.length,
+                limit: pageLimit,
                 total: result.total
             },
             "Wishlist fetched successfully"

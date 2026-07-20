@@ -59,6 +59,13 @@ export const toggleWishlist = async (userId, productId) => {
 /* Get wishlist api service */
 export const getWishlist = async ({ userId, page, limit, currency }) => {
 
+    if (!userId) {
+        return {
+            products: [],
+            total: 0,
+        };
+    }
+
     const wishlist = await Wishlist.findOne({ user_id: userId })
         .populate({
             path: "products.product_id",
