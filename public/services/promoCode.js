@@ -1,5 +1,5 @@
 import { escapeRegex } from "../helpers/constant.js";
-import PromoCode from "../models/PromoCode.js";
+import PromoCode from "../models/promoCode.js";
 
 /* Create promo code */
 export const createPromoCode = async (payload) => {
