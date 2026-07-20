@@ -1,7 +1,7 @@
 import { JEWELLERY } from "../helpers/constant.js";
 import Globals from "../models/globals.js";
 import Product from "../models/product.js";
-import Wishlist from "../models/Wishlist.js";
+import Wishlist from "../models/wishlist.js";
 import { calculateJewelleryPrice } from "../utills/productPrice.helper.js";
 
 /* Add wishlist by login user */
