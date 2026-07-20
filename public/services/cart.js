@@ -1,6 +1,6 @@
 import { JEWELLERY } from "../helpers/constant.js";
 import { success } from "../helpers/response.js";
-import Cart from "../models/Cart.js";
+import Cart from "../models/cart.js";
 import Product from "../models/Product.js";
 import Global from "../models/globals.js";
 import { calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";

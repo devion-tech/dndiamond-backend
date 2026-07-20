@@ -3,20 +3,16 @@ import Category from "../models/category.js";
 import Subcategory from "../models/subcategory.js";
 import Attribute from "../models/attributes.js";
 import Globals from "../models/globals.js";
-import {
-  calculateJewelleryPrice,
-  calculateJewelleryVariantPrices,
-} from "../utills/productPrice.helper.js";
+import { calculateJewelleryPrice, calculateJewelleryVariantPrices } from "../utills/productPrice.helper.js";
 import { JEWELLERY } from "../helpers/constant.js";
 import mongoose from "mongoose";
 import Review from "../models/review.js";
 import Wishlist from "../models/wishlist.js";
 import { generateSlug } from "../helpers/slug.js";
-import Cart from "../models/Cart.js";
+import Cart from "../models/cart.js";
 
 export const createProduct = async (payload) => {
-  const { name, category_id, sku, subcategory_id, diamond_type, attribute_id } =
-    payload;
+  const { name, category_id, sku, subcategory_id, diamond_type, attribute_id } = payload;
 
   payload.slug = await generateSlug(name);
 
