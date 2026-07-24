@@ -49,3 +49,10 @@ export const updateOrderStatusValidation = Joi.object({
     )
     .required(),
 });
+
+/* Stripe session create api */
+export const createStripeSessionValidation = Joi.object({
+  order_id: objectId.required().messages({
+    "any.required": "Order id is required",
+  }),
+});

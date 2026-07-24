@@ -127,6 +127,10 @@ const OrderSchema = new mongoose.Schema(
             default: "pending",
         },
 
+        stripe_session_id: {
+            type: String,
+            default: null,
+        },
         payment_intent_id: {
             type: String,
             default: null,
@@ -148,7 +152,7 @@ const OrderSchema = new mongoose.Schema(
                 "cancelled",
                 "returned",
             ],
-            default: "confirmed",
+            default: "pending",
         },
 
         notes: {

@@ -5,6 +5,8 @@ import Cart from "../models/cart.js";
 import PromoCode from "../models/promoCode.js";
 import { calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";
 import { JEWELLERY, ROLE } from "../helpers/constant.js";
+import stripe from "../../db/stripe.js";
+import Product from "../models/product.js";
 
 /* Create Order */
 export const createOrder = async (userId, payload, currency) => {
@@ -12,7 +14,9 @@ export const createOrder = async (userId, payload, currency) => {
     const { address_id, promo_code = null, notes = "", } = payload;
 
     // Get Cart
-    const cart = await Cart.findOne({ user_id: userId }).populate("items.product_id");
+    const cart = await Cart.findOne({
+        user_id: userId,
+    }).populate("items.product_id");
 
     if (!cart || !cart.items.length) {
         return {
@@ -41,18 +45,18 @@ export const createOrder = async (userId, payload, currency) => {
 
     let subtotal = 0;
 
-    // Calculate prices again
     for (const item of cart.items) {
+
         const product = item.product_id;
 
         if (!product || product.is_deleted === 1) {
             continue;
         }
 
-        let unitPrice = product.price_snapshot;
+        let unitPrice = item.price_snapshot;
 
-        // Jewellery Dynamic Price
         if (product.product_type === JEWELLERY) {
+
             const selectedGoldType = item.selected_options?.gold_type;
 
             unitPrice = calculateSelectedGoldPrice(
@@ -78,33 +82,45 @@ export const createOrder = async (userId, payload, currency) => {
         });
     }
 
-    // Promo Code Logic
+    // Promo Code
     let discountAmount = 0;
 
     if (promo_code) {
+
         const promo = await PromoCode.findOne({
             code: promo_code,
             is_active: true,
         });
 
         if (promo) {
-            if (promo.discount_type === "percentage") {
-                discountAmount = (subtotal * promo.discount_value) / 100;
 
-                if (promo.maximum_discount && discountAmount > promo.maximum_discount) {
+            if (promo.discount_type === "percentage") {
+
+                discountAmount =
+                    (subtotal * promo.discount_value) / 100;
+
+                if (
+                    promo.maximum_discount &&
+                    discountAmount > promo.maximum_discount
+                ) {
                     discountAmount = promo.maximum_discount;
                 }
+
             } else {
+
                 discountAmount = promo.discount_value;
+
             }
         }
     }
 
     const shippingCharge = 0;
 
-    const totalAmount = subtotal + shippingCharge - discountAmount;
+    const totalAmount =
+        subtotal +
+        shippingCharge -
+        discountAmount;
 
-    // Generate Order Number
     const orderNumber = `ORD${Date.now()}`;
 
     const order = await Order.create({
@@ -117,8 +133,8 @@ export const createOrder = async (userId, payload, currency) => {
             mobile: address.mobile,
             email: address.email,
             country: address.country,
-            city: address.city,
             state: address.state,
+            city: address.city,
             address_line_1: address.address_line_1,
             address_line_2: address.address_line_2,
             landmark: address.landmark,
@@ -130,16 +146,67 @@ export const createOrder = async (userId, payload, currency) => {
         subtotal,
         shipping_charge: shippingCharge,
         total_amount: totalAmount,
+        currency,
         notes,
+        payment_status: "pending",
+        order_status: "pending",
+
     });
 
-    // Clear Cart
-    cart.products = [];
-    await cart.save();
+    // Create Stripe Checkout Session
+
+    const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        automatic_payment_methods: {
+            enabled: true,
+        },
+
+        line_items: [
+            {
+                price_data: {
+
+                    currency:
+                        order.currency.toLowerCase(),
+
+                    product_data: {
+                        name: `Order ${order.order_number}`,
+                    },
+
+                    unit_amount:
+                        Math.round(
+                            order.total_amount * 100
+                        ),
+
+                },
+
+                quantity: 1,
+            },
+        ],
+
+        metadata: {
+            order_id: order._id.toString(),
+            user_id: order.user_id.toString(),
+
+        },
+
+        success_url: `${process.env.FRONTEND_URL}/order/success?order_id=${order._id}`,
+        cancel_url: `${process.env.FRONTEND_URL}/order/cancel?order_id=${order._id}`,
+
+    });
+
+    order.stripe_session_id = session.id;
+
+    await order.save();
 
     return {
         success: true,
-        data: order,
+        data: {
+            order_id: order._id,
+            order_number: order.order_number,
+            checkout_url: session.url,
+            session_id: session.id,
+
+        },
     };
 };
 
@@ -293,4 +360,121 @@ export const updateOrderStatus = async (orderId, orderStatus) => {
         message: "Order status updated successfully",
         data: order,
     };
+};
+
+/* Create stripe session and return url */
+export const createStripeSession = async ({ userId, orderId, }) => {
+    const order = await Order.findOne({
+        _id: orderId,
+        user_id: userId,
+        is_deleted: 0,
+    });
+
+    if (!order) {
+        return {
+            success: false,
+            message: "Order not found.",
+        };
+    }
+
+    if (order.payment_status !== "pending") {
+        return {
+            success: false,
+            message: "Payment already completed.",
+        };
+    }
+
+    const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        automatic_payment_methods: { enabled: true, },
+        // payment_method_types: ["card"],
+
+        line_items: [
+            {
+                price_data: {
+                    currency: order.currency.toLowerCase(),
+                    product_data: { name: order.order_number, },
+                    unit_amount: Math.round(order.total_amount * 100),
+                },
+                quantity: 1,
+            },
+        ],
+
+        metadata: {
+            order_id: order._id.toString(),
+            user_id: order.user_id.toString(),
+        },
+
+        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+
+        cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+    });
+
+    order.stripe_session_id = session.id;
+    await order.save();
+
+    return {
+        checkout_url: session.url,
+        session_id: session.id,
+    };
+};
+
+/* Stripe webhook */
+export const stripeWebhook = async (req) => {
+
+    const signature = req.headers["stripe-signature"];
+
+    const event = stripe.webhooks.constructEvent(
+        req.body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+    );
+
+    switch (event.type) {
+
+        case "checkout.session.completed": {
+            const session = event.data.object;
+            const orderId = session.metadata.order_id;
+            const order = await Order.findById(orderId);
+
+            if (!order) { return; }
+
+            // Prevent duplicate webhook processing
+            if (order.payment_status === "paid") { return; }
+
+            order.payment_status = "paid";
+            order.order_status = "confirmed";
+            order.payment_method = session.payment_method_types?.[0] || "card";
+            order.payment_intent_id = session.payment_intent;
+            order.transaction_id = session.payment_intent;
+            order.stripe_session_id = session.id;
+
+            await order.save();
+
+            // Reduce stock
+            for (const item of order.products) {
+
+                await Product.updateOne(
+                    {
+                        _id: item.product_id,
+                    },
+                    {
+                        $inc: {
+                            qty: -item.quantity,
+                        },
+                    }
+                );
+
+            }
+
+            // Clear Cart
+            await Cart.deleteOne({ user_id: order.user_id, });
+
+            break;
+        }
+
+        default:
+            console.log(`Unhandled event ${event.type}`);
+    }
+    return;
 };
