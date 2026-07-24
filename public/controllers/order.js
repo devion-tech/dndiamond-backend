@@ -123,3 +123,30 @@ export const updateOrderStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+/* Create Stripe Session API with validation */
+export const createStripeSession = async (req, res, next) => {
+    try {
+
+        const result = await orderService.createStripeSession({
+            userId: req.user,
+            orderId: req.body.order_id,
+        });
+
+        return success(res, result, "Stripe session created successfully.");
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+/* Stripe webhook API call for confirmation */
+export const stripeWebhook = async (req, res, next) => {
+    try {
+        await orderService.stripeWebhook(req);
+        return res.status(200).send();
+
+    } catch (error) {
+        next(error);
+    }
+};

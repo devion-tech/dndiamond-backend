@@ -5,6 +5,8 @@ import Cart from "../models/cart.js";
 import PromoCode from "../models/promoCode.js";
 import { calculateSelectedGoldPrice } from "../utills/productPrice.helper.js";
 import { JEWELLERY, ROLE } from "../helpers/constant.js";
+import stripe from "../../db/stripe.js";
+import Product from "../models/product.js";
 
 /* Create Order */
 export const createOrder = async (userId, payload, currency) => {
@@ -293,4 +295,121 @@ export const updateOrderStatus = async (orderId, orderStatus) => {
         message: "Order status updated successfully",
         data: order,
     };
+};
+
+/* Create stripe session and return url */
+export const createStripeSession = async ({ userId, orderId, }) => {
+    const order = await Order.findOne({
+        _id: orderId,
+        user_id: userId,
+        is_deleted: 0,
+    });
+
+    if (!order) {
+        return {
+            success: false,
+            message: "Order not found.",
+        };
+    }
+
+    if (order.payment_status !== "pending") {
+        return {
+            success: false,
+            message: "Payment already completed.",
+        };
+    }
+
+    const session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        automatic_payment_methods: { enabled: true, },
+        // payment_method_types: ["card"],
+
+        line_items: [
+            {
+                price_data: {
+                    currency: order.currency.toLowerCase(),
+                    product_data: { name: order.order_number, },
+                    unit_amount: Math.round(order.total_amount * 100),
+                },
+                quantity: 1,
+            },
+        ],
+
+        metadata: {
+            order_id: order._id.toString(),
+            user_id: order.user_id.toString(),
+        },
+
+        success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+
+        cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+    });
+
+    order.stripe_session_id = session.id;
+    await order.save();
+
+    return {
+        checkout_url: session.url,
+        session_id: session.id,
+    };
+};
+
+/* Stripe webhook */
+export const stripeWebhook = async (req) => {
+
+    const signature = req.headers["stripe-signature"];
+
+    const event = stripe.webhooks.constructEvent(
+        req.body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+    );
+
+    switch (event.type) {
+
+        case "checkout.session.completed": {
+            const session = event.data.object;
+            const orderId = session.metadata.order_id;
+            const order = await Order.findById(orderId);
+
+            if (!order) { return; }
+
+            // Prevent duplicate webhook processing
+            if (order.payment_status === "paid") { return; }
+
+            order.payment_status = "paid";
+            order.order_status = "confirmed";
+            order.payment_method = session.payment_method_types?.[0] || "card";
+            order.payment_intent_id = session.payment_intent;
+            order.transaction_id = session.payment_intent;
+            order.stripe_session_id = session.id;
+
+            await order.save();
+
+            // Reduce stock
+            for (const item of order.products) {
+
+                await Product.updateOne(
+                    {
+                        _id: item.product_id,
+                    },
+                    {
+                        $inc: {
+                            qty: -item.quantity,
+                        },
+                    }
+                );
+
+            }
+
+            // Clear Cart
+            await Cart.deleteOne({ user_id: order.user_id, });
+
+            break;
+        }
+
+        default:
+            console.log(`Unhandled event ${event.type}`);
+    }
+    return;
 };
