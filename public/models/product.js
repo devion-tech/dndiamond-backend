@@ -163,16 +163,17 @@ const ProductSchema = new mongoose.Schema(
         default: 0,
       },
     },
+
     meta_title: {
       type: String,
-      required: true,
-      trim: true,
+      required: false,
     },
+
     meta_description: {
       type: String,
-      required: true,
-      trim: true,
+      required: false,
     },
+
     is_deleted: {
       type: Number,
       default: 0,

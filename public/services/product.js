@@ -15,8 +15,7 @@ import { generateSlug } from "../helpers/slug.js";
 import Cart from "../models/cart.js";
 
 export const createProduct = async (payload) => {
-  const { name, category_id, sku, subcategory_id, diamond_type, attribute_id } =
-    payload;
+  const { name, category_id, sku, subcategory_id, diamond_type, attribute_id } = payload;
 
   payload.slug = await generateSlug(name);
 

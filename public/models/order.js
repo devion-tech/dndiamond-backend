@@ -39,6 +39,16 @@ const OrderProductSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+
+        base_price: {
+            type: Number,
+            required: true,
+        },
+
+        base_total_price: {
+            type: Number,
+            required: true,
+        },
     },
     {
         _id: false,
@@ -85,7 +95,17 @@ const OrderSchema = new mongoose.Schema(
             default: 0,
         },
 
+        base_discount_amount: {
+            type: Number,
+            default: 0,
+        },
+
         subtotal: {
+            type: Number,
+            required: true,
+        },
+
+        base_subtotal: {
             type: Number,
             required: true,
         },
@@ -96,6 +116,11 @@ const OrderSchema = new mongoose.Schema(
         },
 
         total_amount: {
+            type: Number,
+            required: true,
+        },
+
+        base_total_amount: {
             type: Number,
             required: true,
         },
@@ -111,6 +136,10 @@ const OrderSchema = new mongoose.Schema(
             default: "HKD",
         },
 
+        base_currency: {
+            type: String,
+            default: "HKD",
+        },
         payment_method: {
             type: String,
             default: null,

@@ -388,7 +388,7 @@ export const getCategoryById = async (payload) => {
 export const getSubCategories = async () => {
   try {
     const query = { is_deleted: 0 };
-    const subCategories = await Subcategory.find(query).select("_id name");
+    const subCategories = await Subcategory.find(query).select("_id name slug");
     return subCategories;
   } catch (error) {
     throw new Error("Internal server error", error.message);
