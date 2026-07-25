@@ -6,9 +6,7 @@ export const calculateJewelleryPrice = (product, pricingSettings, currency) => {
 
   const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
-  if (!goldOption) {
-    return 0;
-  }
+  if (!goldOption) { return 0; }
 
   const prices = goldOption.values.map((gold) => {
     const goldRate = pricingSettings[gold.value] || 0;
