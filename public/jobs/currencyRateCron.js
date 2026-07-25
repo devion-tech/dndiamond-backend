@@ -24,9 +24,8 @@ export const updateCurrencyRates = async () => {
       },
     );
 
-    console.log("Currency rates updated successfully");
   } catch (error) {
-    console.error("Currency update failed:", error.message);
+    return error;
   }
 };
 
