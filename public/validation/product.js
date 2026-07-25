@@ -116,9 +116,9 @@ export const createProductValidation = Joi.object({
     "array.min": "At least one option is required",
     "array.base": "Options must be an array",
   }),
-  diamonds: Joi.array().items(diamondSchema).optional().messages({
-    "array.base": "Diamonds must be an array",
-  }),
+  meta_title: Joi.string().trim().optional(),
+  meta_description: Joi.string().trim().optional(),
+
 }).custom((value, helpers) => {
   if (value.product_type !== "jewellery") {
     return value;
@@ -149,14 +149,6 @@ export const editProductValidation = Joi.object({
   product_type: Joi.string().valid("jewellery", "diamond", "watch").messages({
     "any.only": "Invalid product type",
   }),
-  // diamond_type: Joi.string()
-  //   .valid("labgrown", "natural")
-  //   .optional()
-  //   .disallow("")
-  //   .messages({
-  //     "any.required": "Diamond type is required",
-  //     "any.only": "Invalid diamond type",
-  //   }),
   slug: Joi.string().trim().lowercase().optional(),
   price: Joi.number().messages({
     "number.base": "Price must be a number",
@@ -195,6 +187,8 @@ export const editProductValidation = Joi.object({
   diamonds: Joi.array().items(diamondSchema).optional().messages({
     "array.base": "Diamonds must be an array",
   }),
+  meta_title: Joi.string().trim().optional(),
+  meta_description: Joi.string().trim().optional(),
 });
 
 export const getProductsValidation = Joi.object({

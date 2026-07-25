@@ -423,6 +423,9 @@ export const stripeWebhook = async (req) => {
 
       order.payment_status = "paid";
       order.order_status = "confirmed";
+      order.status_history.push({
+        status: "confirmed",
+      });
       order.payment_method = session.payment_method_types?.[0] || "card";
       order.payment_intent_id = session.payment_intent;
       order.transaction_id = session.payment_intent;
