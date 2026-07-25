@@ -32,7 +32,7 @@ export const verifyData = async (data, hashedData) => {
     const isMatch = await bcrypt.compare(data, hashedData);
     return isMatch;
   } catch (error) {
-    console.error("Error verifying password:", error);
+    return error;
   }
 };
 // Decrypt

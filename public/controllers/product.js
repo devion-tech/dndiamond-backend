@@ -70,7 +70,6 @@ export const getAllProduct = async (req, res, next) => {
 export const getSingleProduct = async (req, res, next) => {
   try {
     const currency = req.headers["x-currency"] || "HKD";
-    console.log("currency :>> ", currency);
     const result = await productService.getSingleProduct(
       req.params.identifier,
       req?.user?._id,
