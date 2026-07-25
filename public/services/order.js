@@ -43,6 +43,7 @@ export const createOrder = async (userId, payload, currency) => {
   const orderProducts = [];
 
   let subtotal = 0;
+  let baseSubtotal = 0;
 
   for (const item of cart.items) {
     const product = item.product_id;
@@ -52,9 +53,17 @@ export const createOrder = async (userId, payload, currency) => {
     }
 
     let unitPrice = item.price_snapshot;
+    let baseUnitPrice = item.price_snapshot;
 
     if (product.product_type === JEWELLERY) {
       const selectedGoldType = item.selected_options?.gold_type;
+
+      baseUnitPrice = calculateSelectedGoldPrice(
+        product,
+        pricingSettings,
+        selectedGoldType,
+        "HKD",
+      );
 
       unitPrice = calculateSelectedGoldPrice(
         product,
@@ -67,6 +76,8 @@ export const createOrder = async (userId, payload, currency) => {
     const totalPrice = unitPrice * item.quantity;
 
     subtotal += totalPrice;
+    baseSubtotal += baseUnitPrice * item.quantity;
+
 
     orderProducts.push({
       product_id: product._id,
@@ -76,11 +87,14 @@ export const createOrder = async (userId, payload, currency) => {
       selected_options: item.selected_options,
       price: unitPrice,
       total_price: totalPrice,
+      base_price: baseUnitPrice,
+      base_total_price: baseUnitPrice * item.quantity,
     });
   }
 
   // Promo Code
   let discountAmount = 0;
+  let baseDiscountAmount = 0;
 
   if (promo_code) {
     const promo = await PromoCode.findOne({
@@ -91,12 +105,28 @@ export const createOrder = async (userId, payload, currency) => {
     if (promo) {
       if (promo.discount_type === "percentage") {
         discountAmount = (subtotal * promo.discount_value) / 100;
+        baseDiscountAmount = (baseSubtotal * promo.discount_value) / 100;
 
         if (promo.maximum_discount && discountAmount > promo.maximum_discount) {
           discountAmount = promo.maximum_discount;
         }
+
+        if (
+          promo.maximum_discount &&
+          baseDiscountAmount > promo.maximum_discount
+        ) {
+          baseDiscountAmount = promo.maximum_discount;
+        }
       } else {
-        discountAmount = promo.discount_value;
+        // Fixed discount stored in HKD
+        baseDiscountAmount = promo.discount_value;
+
+        const exchangeRate =
+          pricingSettings.currency_rates.get(currency) || 1;
+
+        discountAmount = Number(
+          (promo.discount_value * exchangeRate).toFixed(2)
+        );
       }
     }
   }
@@ -104,6 +134,7 @@ export const createOrder = async (userId, payload, currency) => {
   const shippingCharge = 0;
 
   const totalAmount = subtotal + shippingCharge - discountAmount;
+  const baseTotalAmount = baseSubtotal + shippingCharge - baseDiscountAmount;
 
   const orderNumber = `ORD${Date.now()}`;
 
@@ -127,10 +158,18 @@ export const createOrder = async (userId, payload, currency) => {
 
     promo_code,
     discount_amount: discountAmount,
+    base_discount_amount: baseDiscountAmount,
+
     subtotal,
-    shipping_charge: shippingCharge,
     total_amount: totalAmount,
+
+    base_subtotal: baseSubtotal,
+    base_total_amount: baseTotalAmount,
+
+    shipping_charge: shippingCharge,
+
     currency,
+    base_currency: "HKD",
     notes,
     payment_status: "pending",
     order_status: "pending",
