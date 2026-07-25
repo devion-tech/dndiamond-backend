@@ -45,17 +45,17 @@ export const getCategoryById = async (req, res) => {
 };
 
 export const createSubcategory = async (req, res) => {
-  try {
-    const result = await categoryService.createSubcategory(req.body);
+  // try {
+  const result = await categoryService.createSubcategory(req.body);
 
-    if (!result.success) {
-      return errorHandler(res, result.message, 400);
-    }
-
-    return success(res, result.data, "Subcategory created successfully", 201);
-  } catch (error) {
-    return errorHandler(res, "Internal server error", 500);
+  if (!result.success) {
+    return errorHandler(res, result.message, 400);
   }
+
+  return success(res, result.data, "Subcategory created successfully", 201);
+  // } catch (error) {
+  //   return errorHandler(res, "Internal server error", 500);
+  // }
 };
 
 export const updateSubcategory = async (req, res) => {

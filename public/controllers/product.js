@@ -45,7 +45,7 @@ export const getAllProduct = async (req, res, next) => {
       category_slug: body.category_slug,
       subcategory_slug: body.subcategory_slug,
       user_id: req?.user?._id,
-      currency
+      currency,
     });
 
     return success(
@@ -70,11 +70,12 @@ export const getAllProduct = async (req, res, next) => {
 export const getSingleProduct = async (req, res, next) => {
   try {
     const currency = req.headers["x-currency"] || "HKD";
+    console.log("currency :>> ", currency);
     const result = await productService.getSingleProduct(
       req.params.identifier,
       req?.user?._id,
       req?.query?.guest_id,
-      currency
+      currency,
     );
     if (!result.success) {
       return errorHandler(res, result.message);
