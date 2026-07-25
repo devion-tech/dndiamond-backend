@@ -54,6 +54,7 @@ export const createSubcategory = async (req, res) => {
 
   return success(res, result.data, "Subcategory created successfully", 201);
   // } catch (error) {
+  // console.log("error :>> ", error);
   //   return errorHandler(res, "Internal server error", 500);
   // }
 };
