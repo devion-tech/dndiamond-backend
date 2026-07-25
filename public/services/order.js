@@ -47,7 +47,6 @@ export const createOrder = async (userId, payload, currency) => {
 
   for (const item of cart.items) {
     const product = item.product_id;
-
     if (!product || product.is_deleted === 1) {
       continue;
     }
@@ -56,7 +55,7 @@ export const createOrder = async (userId, payload, currency) => {
     let baseUnitPrice = item.price_snapshot;
 
     if (product.product_type === JEWELLERY) {
-      const selectedGoldType = item.selected_options?.gold_type;
+      const selectedGoldType = item.selected_options.get("gold_type");
 
       baseUnitPrice = calculateSelectedGoldPrice(
         product,
@@ -71,6 +70,17 @@ export const createOrder = async (userId, payload, currency) => {
         selectedGoldType,
         currency,
       );
+
+      console.log({
+        weight: product.weight,
+        selectedGoldType,
+        goldRate: pricingSettings[selectedGoldType],
+        makingCharge: pricingSettings.making_charge,
+        diamondCost: product.pricing?.diamond_cost,
+        gemstoneCost: product.pricing?.gemstone_cost,
+        additionalCost: product.pricing?.additional_cost,
+        currency,
+      });
     }
 
     const totalPrice = unitPrice * item.quantity;
@@ -177,15 +187,14 @@ export const createOrder = async (userId, payload, currency) => {
 
   // Create Stripe Checkout Session
 
-  console.log("process.env.FRONTEND_URL :>> ", process.env.FRONTEND_URL);
-  console.log(
-    `${process.env.FRONTEND_URL}/order/success?order_id=${order._id}`,
-  );
+  console.log(`${process.env.FRONTEND_URL}/order/success?order_id=${order._id}`,);
   console.log(`${process.env.FRONTEND_URL}/order/cancel?order_id=${order._id}`);
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+
     // automatic_payment_methods: {
-    //   enabled: true,
+    //   enabled: true, 
     // },
 
     line_items: [
