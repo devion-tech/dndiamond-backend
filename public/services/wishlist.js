@@ -69,7 +69,7 @@ export const getWishlist = async ({ userId, page, limit, currency }) => {
     const wishlist = await Wishlist.findOne({ user_id: userId })
         .populate({
             path: "products.product_id",
-            select: "-pricing  -updatedAt -is_deleted -__v ",
+            select: "-updatedAt -is_deleted -__v ",
             // populate: [
             //     {
             //         path: "category_id",
@@ -93,21 +93,17 @@ export const getWishlist = async ({ userId, page, limit, currency }) => {
     const pricingSettings = await Globals.findOne();
 
     const total = wishlist.products.length;
-    const startIndex = (page - 1) * limit;
 
-    const endIndex = startIndex + limit;
-    const products = wishlist.products
-        .slice(startIndex, endIndex)
-        .map((item) => {
-            const product = item.product_id.toObject();
-            if (product.product_type === JEWELLERY) {
-                product.display_price = calculateJewelleryPrice(product, pricingSettings, currency);
-            } else {
-                product.display_price = product.price;
-            }
+    const products = wishlist.products.map((item) => {
+        const product = item.product_id.toObject();
+        if (product.product_type === JEWELLERY) {
+            product.display_price = calculateJewelleryPrice(product, pricingSettings, currency);
+        } else {
+            product.display_price = product.price;
+        }
 
-            return product;
-        });
+        return product;
+    });
 
     return {
         products,
