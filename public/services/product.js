@@ -236,9 +236,7 @@ export const getProducts = async ({
     filter.$and = optionFilters;
   }
 
-  const products = await Product.find(filter)
-    .select({ pricing: 0 })
-    .populate("subcategory_id");
+  const products = await Product.find(filter).select({ updatedAt: 0 }).populate("subcategory_id");
 
   let wishlistProductIds = new Set();
 
@@ -250,11 +248,11 @@ export const getProducts = async ({
       );
     }
   }
+
   const pricingSettings = await Globals.findOne();
 
   const productsWithPrice = products.map((product) => {
     let displayPrice = product.price;
-
     if (product.product_type === JEWELLERY) {
       displayPrice = calculateJewelleryPrice(
         product,
@@ -262,6 +260,7 @@ export const getProducts = async ({
         currency,
       );
     }
+    // console.log('displayPrice :>> ', displayPrice);
 
     return {
       ...product.toObject(),
