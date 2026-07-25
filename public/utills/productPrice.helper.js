@@ -72,8 +72,8 @@ export const calculateSelectedGoldPrice = (
   selectedGoldType,
   currency,
 ) => {
-  const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
 
+  const exchangeRate = pricingSettings.currency_rates.get(currency) || 1;
   const goldRate = pricingSettings[selectedGoldType] || 0;
   const goldPrice = product.weight * goldRate;
   const makingCharge = product.weight * pricingSettings.making_charge;
@@ -84,6 +84,5 @@ export const calculateSelectedGoldPrice = (
     (product.pricing?.diamond_cost || 0) +
     (product.pricing?.gemstone_cost || 0) +
     (product.pricing?.additional_cost || 0);
-
   return Number((hkdPrice * exchangeRate).toFixed(2));
 };
