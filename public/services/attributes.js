@@ -65,7 +65,6 @@ export const updateAttribute = async (payload) => {
   if (attributes !== undefined) {
     existing.attributes = attributes;
   }
-  console.log("diamond", diamond);
   if (diamond !== undefined) {
     existing.diamond = diamond;
   }

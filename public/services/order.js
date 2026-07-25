@@ -70,17 +70,6 @@ export const createOrder = async (userId, payload, currency) => {
         selectedGoldType,
         currency,
       );
-
-      console.log({
-        weight: product.weight,
-        selectedGoldType,
-        goldRate: pricingSettings[selectedGoldType],
-        makingCharge: pricingSettings.making_charge,
-        diamondCost: product.pricing?.diamond_cost,
-        gemstoneCost: product.pricing?.gemstone_cost,
-        additionalCost: product.pricing?.additional_cost,
-        currency,
-      });
     }
 
     const totalPrice = unitPrice * item.quantity;
@@ -145,7 +134,6 @@ export const createOrder = async (userId, payload, currency) => {
   const baseTotalAmount = baseSubtotal + shippingCharge - baseDiscountAmount;
 
   const orderNumber = `ORD${Date.now()}`;
-  console.log("subtotal :>> ", subtotal);
 
   const order = await Order.create({
     user_id: userId,
@@ -185,11 +173,6 @@ export const createOrder = async (userId, payload, currency) => {
   });
 
   // Create Stripe Checkout Session
-
-  console.log(
-    `${process.env.FRONTEND_URL}/order/success?order_id=${order._id}`,
-  );
-  console.log(`${process.env.FRONTEND_URL}/order/cancel?order_id=${order._id}`);
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",

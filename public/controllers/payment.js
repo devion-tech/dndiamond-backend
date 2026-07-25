@@ -23,7 +23,6 @@ export const stripeWebhook = async (req, res, next) => {
 
         return success(res, result.data, "Payment recived");
     } catch (error) {
-        console.log(error);
         next(error);
     }
 };
