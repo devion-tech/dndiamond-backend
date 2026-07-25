@@ -118,7 +118,9 @@ export const createProductValidation = Joi.object({
   }),
   meta_title: Joi.string().trim().optional(),
   meta_description: Joi.string().trim().optional(),
-
+  diamonds: Joi.array().items(diamondSchema).optional().messages({
+    "array.base": "Diamonds must be an array",
+  }),
 }).custom((value, helpers) => {
   if (value.product_type !== "jewellery") {
     return value;
@@ -189,6 +191,9 @@ export const editProductValidation = Joi.object({
   }),
   meta_title: Joi.string().trim().optional(),
   meta_description: Joi.string().trim().optional(),
+  diamonds: Joi.array().items(diamondSchema).optional().messages({
+    "array.base": "Diamonds must be an array",
+  }),
 });
 
 export const getProductsValidation = Joi.object({
