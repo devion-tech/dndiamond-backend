@@ -119,17 +119,25 @@ export const getCart = async (userId, guestId, currency) => {
       let currentPrice = product.price || 0;
 
       if (product.product_type === JEWELLERY) {
+
         currentPrice = calculateSelectedGoldPrice(
           product,
           pricingSettings,
-          item.selected_options.gold_type,
+          item.selected_options.get("gold_type"),
           currency
         );
+
+        // Currency changed? Update snapshot
+        if (item.currency !== currency) {
+          item.price_snapshot = currentPrice;
+          item.currency = currency;
+        }
       }
 
       const total = currentPrice * item.quantity;
       const snapshotTotal = item.price_snapshot * item.quantity;
       subtotal += snapshotTotal;
+
       return {
         item_id: item._id,
         quantity: item.quantity,
@@ -146,8 +154,13 @@ export const getCart = async (userId, guestId, currency) => {
           images: product.images,
         },
       };
-    }),
+    })
   );
+
+  // Save once if any item changed
+  if (cart.items.some(item => item.isModified())) {
+    await cart.save();
+  }
 
   return {
     _id: cart._id,

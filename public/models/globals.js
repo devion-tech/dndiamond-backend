@@ -17,6 +17,11 @@ const GlobalsSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    "20k": {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     "22k": {
       type: Number,
       required: true,

@@ -236,9 +236,7 @@ export const getProducts = async ({
     filter.$and = optionFilters;
   }
 
-  const products = await Product.find(filter)
-    .select({ pricing: 0 })
-    .populate("subcategory_id");
+  const products = await Product.find(filter).select({ updatedAt: 0 }).populate("subcategory_id");
 
   let wishlistProductIds = new Set();
 
@@ -250,11 +248,11 @@ export const getProducts = async ({
       );
     }
   }
+
   const pricingSettings = await Globals.findOne();
 
   const productsWithPrice = products.map((product) => {
     let displayPrice = product.price;
-
     if (product.product_type === JEWELLERY) {
       displayPrice = calculateJewelleryPrice(
         product,
@@ -360,21 +358,16 @@ export const getSingleProduct = async (
     return {
       ...option.toObject(),
       values: option.values.map((gold) => {
-        const goldRate = pricingSettings[gold.value] || 0;
-        const goldPrice = product.weight * goldRate;
-        const makingCharge = product.weight * pricingSettings.making_charge;
 
-        const finalPrice =
-          goldPrice +
-          makingCharge +
-          (product.pricing?.diamond_cost || 0) +
-          (product.pricing?.gemstone_cost || 0) +
-          (product.pricing?.additional_cost || 0);
+        const variant = goldPrices.find(
+          (item) => item.gold_type === gold.value
+        );
 
         return {
           value: gold.value,
           is_disabled: gold.is_disabled,
-          price: finalPrice,
+          price: variant?.price || 0,
+          currency: variant?.currency || currency,
         };
       }),
     };
