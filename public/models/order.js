@@ -155,6 +155,28 @@ const OrderSchema = new mongoose.Schema(
             default: "pending",
         },
 
+        status_history: [
+            {
+                status: {
+                    type: String,
+                    enum: [
+                        "pending",
+                        "confirmed",
+                        "processing",
+                        "shipped",
+                        "delivered",
+                        "cancelled",
+                        "returned",
+                    ],
+                },
+
+                date: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+
         notes: {
             type: String,
             default: "",

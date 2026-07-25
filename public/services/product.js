@@ -76,7 +76,7 @@ export const editProduct = async (id, payload) => {
     return { success: false, message: "Product not found" };
   }
 
-  const { slug, category_id, subcategory_id, attribute_id } = payload;
+  const { slug, name, sku, category_id, subcategory_id, attribute_id } = payload;
 
   if (category_id) {
     const category = await Category.findOne({
@@ -122,6 +122,36 @@ export const editProduct = async (id, payload) => {
     });
     if (existingSlug) {
       return { success: false, message: `Slug ${slug} already exists` };
+    }
+  }
+
+  if (name) {
+    const existingName = await Product.findOne({
+      name,
+      is_deleted: 0,
+      _id: { $ne: id },
+    });
+
+    if (existingName) {
+      return {
+        success: false,
+        message: "Product name already exists!",
+      };
+    }
+  }
+
+  if (sku) {
+    const existingSku = await Product.findOne({
+      sku,
+      is_deleted: 0,
+      _id: { $ne: id },
+    });
+
+    if (existingSku) {
+      return {
+        success: false,
+        message: "SKU already exists!",
+      };
     }
   }
 
@@ -284,13 +314,13 @@ export const getSingleProduct = async (
 ) => {
   const query = mongoose.Types.ObjectId.isValid(id)
     ? {
-        _id: id,
-        is_deleted: 0,
-      }
+      _id: id,
+      is_deleted: 0,
+    }
     : {
-        slug: id,
-        is_deleted: 0,
-      };
+      slug: id,
+      is_deleted: 0,
+    };
 
   const product = await Product.findOne(query)
     .select("-updatedAt -__v")
