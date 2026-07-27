@@ -116,9 +116,9 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    qty: {
+    in_stock: {
       type: Number,
-      default: 0,
+      default: 1,
     },
     isBestSell: {
       type: Number,

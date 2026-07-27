@@ -443,6 +443,7 @@ export const getSingleProduct = async (
     reviews,
     is_in_cart: !!isInCart,
     is_wishlist: isWishlist,
+    in_stock: product.in_stock,
     success: true,
   };
 };

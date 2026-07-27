@@ -51,6 +51,15 @@ export const createOrder = async (userId, payload, currency) => {
       continue;
     }
 
+    // Stock validation
+    if (!product.in_stock) {
+      return {
+        success: false,
+        message: `${product.name} is out of stock.`,
+      };
+    }
+
+
     let unitPrice = item.price_snapshot;
     let baseUnitPrice = item.price_snapshot;
 
@@ -466,18 +475,18 @@ export const stripeWebhook = async (req) => {
       await order.save();
 
       // Reduce stock
-      for (const item of order.products) {
-        await Product.updateOne(
-          {
-            _id: item.product_id,
-          },
-          {
-            $inc: {
-              qty: -item.quantity,
-            },
-          },
-        );
-      }
+      // for (const item of order.products) {
+      //   await Product.updateOne(
+      //     {
+      //       _id: item.product_id,
+      //     },
+      //     {
+      //       $inc: {
+      //         qty: -item.quantity,
+      //       },
+      //     },
+      //   );
+      // }
 
       // Clear Cart
       await Cart.deleteOne({ user_id: order.user_id });

@@ -15,7 +15,19 @@ export const addToCart = async (userId, payload, currency) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    return {
+      success: false,
+      status: 404,
+      message: "Product not found!"
+    };
+  }
+
+  if (!product.in_stock) {
+    return {
+      success: false,
+      status: 500,
+      message: "Product is out of stock."
+    };
   }
 
   let priceSnapshot = product.price || 0;
@@ -71,7 +83,12 @@ export const addToCart = async (userId, payload, currency) => {
 
   await cart.save();
 
-  return cart;
+  return {
+    success: true,
+    status: 200,
+    message: "Product added to cart successfully",
+    cart
+  };
 };
 
 /* Get cart details */

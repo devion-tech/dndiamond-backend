@@ -10,8 +10,11 @@ export const addToCart = async (req, res, next) => {
         }
 
         const result = await cartService.addToCart(req.user?._id || null, req.body, currency);
+        if (!result.success) {
+            return errorHandler(res, result.message, result.status);
+        }
 
-        return success(res, {}, "Product added to cart successfully");
+        return success(res, {}, result.message);
     } catch (error) {
         next(error);
     }

@@ -62,19 +62,19 @@ export const stripeWebhook = async (req) => {
             await order.save();
 
             // Reduce Stock
-            for (const item of order.products) {
+            // for (const item of order.products) {
 
-                await Product.updateOne(
-                    {
-                        _id: item.product_id,
-                    },
-                    {
-                        $inc: {
-                            qty: -item.quantity,
-                        },
-                    }
-                );
-            }
+            //     await Product.updateOne(
+            //         {
+            //             _id: item.product_id,
+            //         },
+            //         {
+            //             $inc: {
+            //                 qty: -item.quantity,
+            //             },
+            //         }
+            //     );
+            // }
 
             // Clear Cart
             await Cart.updateOne(
