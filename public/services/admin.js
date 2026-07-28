@@ -61,27 +61,28 @@ export const getDashboard = async () => {
     totalOrders,
     activeOrders,
     recentOrders,
-    diamondInquiry
+    diamondInquiry,
   ] = await Promise.all([
-
-    User.countDocuments({ is_deleted: 0, }),
-    Product.countDocuments({ is_deleted: 0, }),
-    Order.countDocuments({ is_deleted: 0, }),
+    User.countDocuments({ is_deleted: 0 }),
+    Product.countDocuments({ is_deleted: 0 }),
+    Order.countDocuments({ is_deleted: 0 }),
     await Order.countDocuments({
       order_status: {
         $nin: ["cancelled", "returned", "delivered"],
       },
       is_deleted: 0,
     }),
-    Order.find({ is_deleted: 0, })
+    Order.find({ is_deleted: 0 })
       .populate("user_id", "name email")
-      .select("address _id user_id products order_number products total_amount base_total_amount order_status createdAt")
-      .sort({ createdAt: -1, })
+      .select(
+        "address _id user_id products order_number products total_amount base_total_amount order_status createdAt",
+      )
+      .sort({ createdAt: -1 })
       .limit(5),
-    DiamondInquiry.find({ is_deleted: 0, })
+    DiamondInquiry.find({ is_deleted: 0 })
       .populate("user_id", "name email")
-      .select("-status -is_deleted -updatedAt -__v")
-      .sort({ createdAt: -1, })
+      .select(" -is_deleted -updatedAt -__v")
+      .sort({ createdAt: -1 })
       .limit(5),
   ]);
 
@@ -99,8 +100,7 @@ export const getDashboard = async () => {
       $group: {
         _id: null,
         totalRevenue: {
-          $sum:
-            "$total_amount",
+          $sum: "$total_amount",
         },
       },
     },
@@ -116,11 +116,11 @@ export const getDashboard = async () => {
       products: totalProducts,
       orders: {
         total: totalOrders,
-        activeOrders: activeOrders
+        activeOrders: activeOrders,
       },
       revenue: totalRevenue,
       recent_orders: recentOrders,
-      diamondInquiry
+      diamondInquiry,
     },
   };
 };
