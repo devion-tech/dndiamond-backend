@@ -2,6 +2,7 @@ import { encryptData, verifyData } from "../common/randomPassword.js";
 import { ROLE } from "../helpers/constant.js";
 import Admin from "../models/admin.js";
 import Category from "../models/category.js";
+import DiamondInquiry from "../models/diamondInquiry.js";
 import Order from "../models/order.js";
 import Product from "../models/product.js";
 import Subcategory from "../models/subcategory.js";
@@ -58,32 +59,28 @@ export const getDashboard = async () => {
     totalUsers,
     totalProducts,
     totalOrders,
-    totalCategories,
-    totalSubcategories,
-    pendingOrders,
-    confirmedOrders,
-    processingOrders,
-    shippedOrders,
-    deliveredOrders,
-    cancelledOrders,
-    returnedOrders,
+    activeOrders,
     recentOrders,
+    diamondInquiry
   ] = await Promise.all([
 
     User.countDocuments({ is_deleted: 0, }),
     Product.countDocuments({ is_deleted: 0, }),
     Order.countDocuments({ is_deleted: 0, }),
-    Category.countDocuments({ is_deleted: 0, }),
-    Subcategory.countDocuments({ is_deleted: 0, }),
-    Order.countDocuments({ order_status: "pending", is_deleted: 0, }),
-    Order.countDocuments({ order_status: "confirmed", is_deleted: 0, }),
-    Order.countDocuments({ order_status: "processing", is_deleted: 0 }),
-    Order.countDocuments({ order_status: "shipped", is_deleted: 0, }),
-    Order.countDocuments({ order_status: "delivered", is_deleted: 0, }),
-    Order.countDocuments({ order_status: "cancelled", is_deleted: 0, }),
-    Order.countDocuments({ order_status: "returned", is_deleted: 0, }),
+    await Order.countDocuments({
+      order_status: {
+        $nin: ["cancelled", "returned", "delivered"],
+      },
+      is_deleted: 0,
+    }),
     Order.find({ is_deleted: 0, })
       .populate("user_id", "name email")
+      .select("address _id user_id products order_number products total_amount base_total_amount order_status createdAt")
+      .sort({ createdAt: -1, })
+      .limit(5),
+    DiamondInquiry.find({ is_deleted: 0, })
+      .populate("user_id", "name email")
+      .select("_id createdAt user_id budget_min budget_max")
       .sort({ createdAt: -1, })
       .limit(5),
   ]);
@@ -91,8 +88,10 @@ export const getDashboard = async () => {
   const revenueData = await Order.aggregate([
     {
       $match: {
-        payment_status:
-          "paid",
+        payment_status: "paid",
+        order_status: {
+          $nin: ["cancelled", "returned"],
+        },
         is_deleted: 0,
       },
     },
@@ -115,20 +114,13 @@ export const getDashboard = async () => {
     data: {
       users: totalUsers,
       products: totalProducts,
-      categories: totalCategories,
-      subcategories: totalSubcategories,
       orders: {
         total: totalOrders,
-        pending: pendingOrders,
-        confirmed: confirmedOrders,
-        processing: processingOrders,
-        shipped: shippedOrders,
-        delivered: deliveredOrders,
-        cancelled: cancelledOrders,
-        returned: returnedOrders,
+        activeOrders: activeOrders
       },
       revenue: totalRevenue,
       recent_orders: recentOrders,
+      diamondInquiry
     },
   };
 };

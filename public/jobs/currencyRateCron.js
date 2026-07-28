@@ -13,12 +13,12 @@ export const updateCurrencyRates = async () => {
         $set: {
           currency_rates: {
             HKD: 1,
-            USD: quotes.HKDUSD,
-            GBP: quotes.HKDGBP,
-            EUR: quotes.HKDEUR,
             AUD: quotes.HKDAUD,
-            SGD: quotes.HKDSGD,
             NZD: quotes.HKDNZD,
+            // USD: quotes.HKDUSD,
+            // GBP: quotes.HKDGBP,
+            // EUR: quotes.HKDEUR,
+            // SGD: quotes.HKDSGD,
           },
         },
       },
