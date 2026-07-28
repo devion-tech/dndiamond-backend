@@ -96,7 +96,7 @@ export const getMyOrders = async (req, res, next) => {
 /* Get single order */
 export const getSingleOrder = async (req, res, next) => {
     try {
-        const result = await orderService.getSingleOrder(req.params.id);
+        const result = await orderService.getSingleOrder(req.params.id, req.user);
 
         if (!result.success) {
             return errorHandler(res, result.message);

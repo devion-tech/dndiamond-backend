@@ -11,7 +11,7 @@ const router = new Router();
 router.post("/", verifytoken, validateRequest(createOrderValidation), orderController.createOrder); /* Create order by user */
 router.get("/", verifyAdminToken, validateRequestForQuery(getOrdersValidation), orderController.getOrders); /* Get all order of user for admin */
 router.get("/myOrders", verifytoken, validateRequestForQuery(getMyOrdersValidation), orderController.getMyOrders);
-router.get("/:id", verifyAdminToken, validateRequestForParams(commonIdValidation), orderController.getSingleOrder); /* Get order by id for user */
+router.get("/:id", verifytoken, validateRequestForParams(commonIdValidation), orderController.getSingleOrder); /* Get order by id for user */
 router.put("/:id", verifyAdminToken, validateRequest(updateOrderStatusValidation), orderController.updateOrderStatus); /* Update order status by admin */
 
 /* Create stripe session api */

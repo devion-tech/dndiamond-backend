@@ -337,8 +337,8 @@ export const getMyOrders = async ({
 };
 
 /* Get single order by admin */
-export const getSingleOrder = async (orderId) => {
-  const filter = { _id: orderId, is_deleted: 0 };
+export const getSingleOrder = async (orderId, userId) => {
+  const filter = { _id: orderId, user_id: userId, is_deleted: 0 };
 
   const order = await Order.findOne(filter)
     .populate("user_id", "name email mobile")
