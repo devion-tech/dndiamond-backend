@@ -80,7 +80,7 @@ export const getDashboard = async () => {
       .limit(5),
     DiamondInquiry.find({ is_deleted: 0, })
       .populate("user_id", "name email")
-      .select("_id createdAt user_id budget_min budget_max")
+      .select("_id createdAt user_id budget_min budget_max additional_notes")
       .sort({ createdAt: -1, })
       .limit(5),
   ]);
