@@ -2,6 +2,7 @@ import { encryptData, verifyData } from "../common/randomPassword.js";
 import { JEWELLERY, ROLE } from "../helpers/constant.js";
 import Globals from "../models/globals.js";
 import Landing from "../models/landing.js";
+import Order from "../models/order.js";
 import Product from "../models/product.js";
 import User from "../models/user.js";
 import { authToken } from "../utills/jwt.helper.js";
@@ -62,7 +63,37 @@ export const findUsers = async ({
     dbQuery.exec(),
     User.countDocuments(query),
   ]);
-  return { users, total };
+
+  const userIds = users.map((user) => user._id);
+
+  const orderCounts = await Order.aggregate([
+    {
+      $match: {
+        user_id: { $in: userIds },
+        is_deleted: 0,
+      },
+    },
+    {
+      $group: {
+        _id: "$user_id",
+        total_orders: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const orderCountMap = new Map(
+    orderCounts.map((item) => [item._id.toString(), item.total_orders])
+  );
+
+  const usersWithOrders = users.map((user) => ({
+    ...user.toObject(),
+    total_orders: orderCountMap.get(user._id.toString()) || 0,
+  }));
+
+  return {
+    users: usersWithOrders,
+    total,
+  };
 };
 
 export const loginUser = async (email, password) => {
